@@ -1,0 +1,9 @@
+{
+  "urls": [
+    {
+      "id": "pages",
+      "module": "home",
+      "urls": []
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "admin_email": "inigo.gorosabel@gmail.com",
+  "default_title": "Cine",
+  "db": {
+  	"host": "localhost",
+  	"user": "cine",
+  	"pass": "A2ng#b77",
+  	"name": "cine"
+  },
+  "base_url": "https://apicine.osumi.es/",
+  "extra": {
+    "num_por_pag": 10,
+    "secret": "ea68e2432f1a91a963e7389adae72cb42d8d8204"
+  }
+}
