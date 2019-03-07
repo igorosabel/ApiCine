@@ -8,8 +8,12 @@
   	"name": "cine"
   },
   "base_url": "https://apicine.osumi.es/",
+  "error_pages": {
+    "404": "/not-found"
+  },
   "extra": {
     "num_por_pag": 10,
-    "secret": "ea68e2432f1a91a963e7389adae72cb42d8d8204"
+    "secret": "ea68e2432f1a91a963e7389adae72cb42d8d8204",
+    "tmdb_api_key": "f54cd33501fddec9a5f6a82d27c61207"
   }
 }

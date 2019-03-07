@@ -25,6 +25,12 @@ class Movie extends OBase{
           'comment'  => 'Nombre de la película',
           'nullable' => false
         ],
+        'slug' => [
+          'type'     => Base::TEXT,
+          'size'     => 50,
+          'comment'  => 'Slug del nombre de la película',
+          'nullable' => false
+        ],
         'ext' => [
           'type'     => Base::TEXT,
           'size'     => 5,
@@ -63,5 +69,30 @@ class Movie extends OBase{
 
   public function __toString(){
     return $this->get('name');
+  }
+
+  public function getCoverUrl(){
+    global $c;
+    return $c->getUrl('base').'cover/'.$this->get('id').'.'.$this->get('cover_ext');
+  }
+
+  public function getTicketUrl(){
+    global $c;
+    return $c->getUrl('base').'ticket/'.$this->get('id').'.'.$this->get('ext');
+  }
+
+  public function deleteFull(){
+    global $c;
+    $cover_route  = $c->getDir('web').'cover/'.$this->get('id').'.'.$this->get('cover_ext');
+    $ticket_route = $c->getDir('web').'ticket/'.$this->get('id').'.'.$this->get('ext');
+
+    if (file_exists($cover_route)){
+      unlink($cover_route);
+    }
+    if (file_exists($ticket_route)){
+      unlink($ticket_route);
+    }
+
+    $this->delete();
   }
 }

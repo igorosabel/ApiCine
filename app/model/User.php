@@ -7,7 +7,7 @@ class User extends OBase{
           'type'    => Base::PK,
           'comment' => 'Id único de cada usuario'
         ],
-        'username' => [
+        'name' => [
           'type'     => Base::TEXT,
           'size'     => 100,
           'comment'  => 'Nombre de usuario',
@@ -33,6 +33,6 @@ class User extends OBase{
   }
 
   public function __toString(){
-    return $this->get('username');
+    return $this->get('name');
   }
 }

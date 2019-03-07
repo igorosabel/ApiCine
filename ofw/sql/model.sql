@@ -4,6 +4,7 @@ CREATE TABLE `cinema` (
   `id` INT(11) NOT NULL AUTO_INCREMENT COMMENT 'Id único para cada cine',
   `id_user` INT(11) NOT NULL COMMENT 'Id del usuario que añade el cine',
   `name` VARCHAR(50) COLLATE utf8_unicode_ci NOT NULL DEFAULT '' COMMENT 'Nombre del cine',
+  `slug` VARCHAR(50) COLLATE utf8_unicode_ci NOT NULL DEFAULT '' COMMENT 'Slug del nombre del cine',
   `created_at` DATETIME NOT NULL COMMENT 'Fecha de creación del registro',
   `updated_at` DATETIME NULL COMMENT 'Fecha de última modificación del registro',
   PRIMARY KEY (`id`)
@@ -15,6 +16,7 @@ CREATE TABLE `movie` (
   `id_user` INT(11) NOT NULL COMMENT 'Id del usuario que añade la película',
   `id_cinema` INT(11) NOT NULL COMMENT 'Id del cine en el que un usuario ha visto la película',
   `name` VARCHAR(50) COLLATE utf8_unicode_ci NOT NULL DEFAULT '' COMMENT 'Nombre de la película',
+  `slug` VARCHAR(50) COLLATE utf8_unicode_ci NOT NULL DEFAULT '' COMMENT 'Slug del nombre de la película',
   `ext` VARCHAR(5) COLLATE utf8_unicode_ci NOT NULL DEFAULT '' COMMENT 'Extensión del archivo de la entrada',
   `imdb_url` VARCHAR(200) COLLATE utf8_unicode_ci NOT NULL DEFAULT '' COMMENT 'Url de la película en IMDB',
   `cover_ext` VARCHAR(5) COLLATE utf8_unicode_ci NOT NULL DEFAULT '' COMMENT 'Extensión del archivo de la carátula',
@@ -27,7 +29,7 @@ CREATE TABLE `movie` (
 
 CREATE TABLE `user` (
   `id` INT(11) NOT NULL AUTO_INCREMENT COMMENT 'Id único de cada usuario',
-  `username` VARCHAR(100) COLLATE utf8_unicode_ci NOT NULL DEFAULT '' COMMENT 'Nombre de usuario',
+  `name` VARCHAR(100) COLLATE utf8_unicode_ci NOT NULL DEFAULT '' COMMENT 'Nombre de usuario',
   `pass` VARCHAR(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '' COMMENT 'Contraseña cifrada del usuario',
   `created_at` DATETIME NOT NULL COMMENT 'Fecha de creación del registro',
   `updated_at` DATETIME NULL COMMENT 'Fecha de última modificación del registro',

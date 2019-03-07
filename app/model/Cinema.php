@@ -19,6 +19,12 @@ class Cinema extends OBase{
           'comment'  => 'Nombre del cine',
           'nullable' => false
         ],
+        'slug' => [
+          'type'     => Base::TEXT,
+          'size'     => 50,
+          'comment'  => 'Slug del nombre del cine',
+          'nullable' => false
+        ],
         'created_at' => [
           'type'    => Base::CREATED,
           'comment' => 'Fecha de creación del registro'
