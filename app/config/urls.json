@@ -101,6 +101,20 @@
           "action": "searchMovie",
           "filter": "loginFilter",
           "comment": "Función para buscar películas en The Movie Data Base"
+        },
+        {
+          "id": "select_result",
+          "url": "/select-result",
+          "action": "selectResult",
+          "filter": "loginFilter",
+          "comment": "Función para obtener el detalle de una película en The Movie Data Base"
+        },
+        {
+          "id": "get_movie",
+          "url": "/get-movie",
+          "action": "getMovie",
+          "filter": "loginFilter",
+          "comment": "Función para obtener el detalle de una película"
         }
       ]
     }

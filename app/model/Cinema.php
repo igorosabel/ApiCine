@@ -41,4 +41,32 @@ class Cinema extends OBase{
   public function __toString(){
     return $this->get('name');
   }
+
+  private $movies = null;
+
+  public function getMovies(){
+    if (is_null($this->movies)){
+      $this->loadMovies();
+    }
+    return $this->movies;
+  }
+
+  public function setMovies($movies){
+    $this->movies = $movies;
+  }
+
+  public function loadMovies(){
+    $sql = "SELECT * FROM `movie` WHERE `id_cinema` = ? ORDER BY `movie_date` DESC";
+    $this->db->query($sql, [$this->get('id')]);
+    $list = [];
+
+    while ($res=$this->db->next()){
+      $movie = new Movie();
+      $movie->update($res);
+
+      array_push($list, $movie);
+    }
+
+    $this->setMovies($list);
+  }
 }
