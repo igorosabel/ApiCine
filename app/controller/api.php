@@ -183,8 +183,6 @@ class api extends OController{
    * Función para obtener la lista de las últimas películas
    */
   function getMovies($req){
-    http_response_code(404);
-    exit();
     $status = 'ok';
     $page   = Base::getParam('page', $req['url_params'], false);
     if (!array_key_exists('filter', $req) || !array_key_exists('id', $req['filter'])){
