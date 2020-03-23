@@ -1,65 +1,65 @@
 <?php
-class Movie extends OBase{
+class Movie extends OModel{
   function __construct(){
     $table_name = 'movie';
     $model = [
         'id' => [
-          'type'    => Base::PK,
+          'type'    => OCore::PK,
           'comment' => 'Id único de cada película'
         ],
         'id_user' => [
-          'type'     => Base::NUM,
+          'type'     => OCore::NUM,
           'comment'  => 'Id del usuario que añade la película',
           'nullable' => false,
           'ref'      => 'user.id'
         ],
         'id_cinema' => [
-          'type'     => Base::NUM,
+          'type'     => OCore::NUM,
           'comment'  => 'Id del cine en el que un usuario ha visto la película',
           'nullable' => false,
           'ref'      => 'cinema.id'
         ],
         'name' => [
-          'type'     => Base::TEXT,
+          'type'     => OCore::TEXT,
           'size'     => 50,
           'comment'  => 'Nombre de la película',
           'nullable' => false
         ],
         'slug' => [
-          'type'     => Base::TEXT,
+          'type'     => OCore::TEXT,
           'size'     => 50,
           'comment'  => 'Slug del nombre de la película',
           'nullable' => false
         ],
         'ext' => [
-          'type'     => Base::TEXT,
+          'type'     => OCore::TEXT,
           'size'     => 5,
           'comment'  => 'Extensión del archivo de la entrada',
           'nullable' => false
         ],
         'imdb_url' => [
-          'type'     => Base::TEXT,
+          'type'     => OCore::TEXT,
           'size'     => 200,
           'comment'  => 'Url de la película en IMDB',
           'nullable' => false
         ],
         'cover_ext' => [
-          'type'     => Base::TEXT,
+          'type'     => OCore::TEXT,
           'size'     => 5,
           'comment'  => 'Extensión del archivo de la carátula',
           'nullable' => false
         ],
         'movie_date' => [
-          'type'     => Base::DATE,
+          'type'     => OCore::DATE,
           'comment'  => 'Fecha en la que un usuario fue a ver la película',
           'nullable' => false
         ],
         'created_at' => [
-          'type'    => Base::CREATED,
+          'type'    => OCore::CREATED,
           'comment' => 'Fecha de creación del registro'
         ],
         'updated_at' => [
-          'type'    => Base::UPDATED,
+          'type'    => OCore::UPDATED,
           'comment' => 'Fecha de última modificación del registro'
         ]
     ];
@@ -72,19 +72,19 @@ class Movie extends OBase{
   }
 
   public function getCoverUrl(){
-    global $c;
-    return $c->getUrl('base').'cover/'.$this->get('id').'.'.$this->get('cover_ext');
+    global $core;
+    return $core->config->getUrl('base').'cover/'.$this->get('id').'.'.$this->get('cover_ext');
   }
 
   public function getTicketUrl(){
-    global $c;
-    return $c->getUrl('base').'ticket/'.$this->get('id').'.'.$this->get('ext');
+    global $core;
+    return $core->config->getUrl('base').'ticket/'.$this->get('id').'.'.$this->get('ext');
   }
 
   public function deleteFull(){
-    global $c;
-    $cover_route  = $c->getDir('web').'cover/'.$this->get('id').'.'.$this->get('cover_ext');
-    $ticket_route = $c->getDir('web').'ticket/'.$this->get('id').'.'.$this->get('ext');
+    global $core;
+    $cover_route  = $core->config->getDir('web').'cover/'.$this->get('id').'.'.$this->get('cover_ext');
+    $ticket_route = $core->config->getDir('web').'ticket/'.$this->get('id').'.'.$this->get('ext');
 
     if (file_exists($cover_route)){
       unlink($cover_route);

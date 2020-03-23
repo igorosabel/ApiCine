@@ -2,15 +2,15 @@
   /*
    * Filtro de seguridad para clientes
    */
-  function loginFilter($req){
-    global $c;
-    $req['filter'] = ['status'=>'error', 'data'=>null];
+  function loginFilter($params, $headers){
+    global $core;
+    $ret = ['status'=>'error', 'data'=>null];
 
-    $tk = new OToken($c->getExtra('secret'));
-    if ($tk->checkToken($req['headers']['Authorization'])){
-      $req['filter']['status'] = 'ok';
-      $req['filter']['id'] = (int)$tk->getParam('id');
+    $tk = new OToken($core->config->getExtra('secret'));
+    if ($tk->checkToken($headers['Authorization'])){
+      $ret['status'] = 'ok';
+      $ret['id'] = intval($tk->getParam('id'));
     }
 
-    return $req;
+    return $ret;
   }

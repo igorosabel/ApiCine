@@ -11,8 +11,8 @@ class api extends OController{
    */
   function login($req){
     $status = 'ok';
-    $name   = Base::getParam('name', $req['url_params'], false);
-    $pass   = Base::getParam('pass', $req['url_params'], false);
+    $name   = OTools::getParam('name', $req['params'], false);
+    $pass   = OTools::getParam('pass', $req['params'], false);
 
     $id    = 'null';
     $token = '';
@@ -53,8 +53,8 @@ class api extends OController{
    */
   function register($req){
     $status = 'ok';
-    $name   = Base::getParam('name', $req['url_params'], false);
-    $pass   = Base::getParam('pass', $req['url_params'], false);
+    $name   = OTools::getParam('name', $req['params'], false);
+    $pass   = OTools::getParam('pass', $req['params'], false);
     $id     = 'null';
     $token  = '';
 
@@ -93,13 +93,13 @@ class api extends OController{
    */
   function getCinemas($req){
     $status = 'ok';
-    if (!array_key_exists('filter', $req) || !array_key_exists('id', $req['filter'])){
+    if (!array_key_exists('loginFilter', $req) || !array_key_exists('id', $req['loginFilter'])){
       $status = 'error';
     }
     $list = [];
 
     if ($status=='ok'){
-      $list = $this->web_service->getCinemas($req['filter']['id']);
+      $list = $this->web_service->getCinemas($req['loginFilter']['id']);
     }
 
     $this->getTemplate()->add('status', $status);
@@ -111,7 +111,7 @@ class api extends OController{
    */
   function addCinema($req){
     $status = 'ok';
-    $name   = Base::getParam('name', $req['url_params'], false);
+    $name   = OTools::getParam('name', $req['params'], false);
 
     if ($name===false){
       $status = 'error';
@@ -119,9 +119,9 @@ class api extends OController{
 
     if ($status=='ok'){
       $cinema = new Cinema();
-      $cinema->set('id_user', $req['filter']['id']);
+      $cinema->set('id_user', $req['loginFilter']['id']);
       $cinema->set('name', $name);
-      $cinema->set('slug', Base::slugify($name));
+      $cinema->set('slug', OTools::slugify($name));
 
       $cinema->save();
     }
@@ -134,7 +134,7 @@ class api extends OController{
    */
   function deleteCinema($req){
     $status = 'ok';
-    $id     = Base::getParam('id', $req['url_params'], false);
+    $id     = OTools::getParam('id', $req['params'], false);
 
     if ($id===false){
       $status = 'error';
@@ -158,8 +158,8 @@ class api extends OController{
    */
   function editCinema($req){
     $status = 'ok';
-    $id     = Base::getParam('id',   $req['url_params'], false);
-    $name   = Base::getParam('name', $req['url_params'], false);
+    $id     = OTools::getParam('id',   $req['params'], false);
+    $name   = OTools::getParam('name', $req['params'], false);
 
     if ($id===false || $name===false){
       $status = 'error';
@@ -184,8 +184,8 @@ class api extends OController{
    */
   function getMovies($req){
     $status = 'ok';
-    $page   = Base::getParam('page', $req['url_params'], false);
-    if (!array_key_exists('filter', $req) || !array_key_exists('id', $req['filter'])){
+    $page   = OTools::getParam('page', $req['params'], false);
+    if (!array_key_exists('loginFilter', $req) || !array_key_exists('id', $req['loginFilter'])){
       $status = 'error';
     }
     if ($page===false){
@@ -195,8 +195,8 @@ class api extends OController{
     $num_pages = 0;
 
     if ($status=='ok'){
-      $list = $this->web_service->getMovies($req['filter']['id'], $page);
-      $num_pages = $this->web_service->getMoviesPages($req['filter']['id']);
+      $list = $this->web_service->getMovies($req['loginFilter']['id'], $page);
+      $num_pages = $this->web_service->getMoviesPages($req['loginFilter']['id']);
     }
 
     $this->getTemplate()->add('status',    $status);
@@ -209,7 +209,7 @@ class api extends OController{
    */
   function getCinemaMovies($req){
     $status = 'ok';
-    $id     = Base::getParam('id', $req['url_params'], false);
+    $id     = OTools::getParam('id', $req['params'], false);
     $list   = [];
 
     if ($id===false){
@@ -235,13 +235,13 @@ class api extends OController{
    */
   function saveMovie($req){
     $status       = 'ok';
-    $id_cinema    = Base::getParam('idCinema',    $req['url_params'], false);
-  	$name         = Base::getParam('name',        $req['url_params'], false);
-  	$cover        = Base::getParam('cover',       $req['url_params'], false);
-  	$cover_status = Base::getParam('coverStatus', $req['url_params'], false);
-  	$ticket       = Base::getParam('ticket',      $req['url_params'], false);
-  	$imdb_url     = Base::getParam('imdbUrl',     $req['url_params'], false);
-  	$date         = Base::getParam('date',        $req['url_params'], false);
+    $id_cinema    = OTools::getParam('idCinema',    $req['params'], false);
+  	$name         = OTools::getParam('name',        $req['params'], false);
+  	$cover        = OTools::getParam('cover',       $req['params'], false);
+  	$cover_status = OTools::getParam('coverStatus', $req['params'], false);
+  	$ticket       = OTools::getParam('ticket',      $req['params'], false);
+  	$imdb_url     = OTools::getParam('imdbUrl',     $req['params'], false);
+  	$date         = OTools::getParam('date',        $req['params'], false);
 
   	if ($id_cinema===false || $name===false || $cover===false || $cover_status===false || $ticket===false || $imdb_url===false || $date===false){
     	$status = 'error';
@@ -249,19 +249,19 @@ class api extends OController{
 
   	if ($status=='ok'){
     	$movie = new Movie();
-    	$movie->set('id_user',    $req['filter']['id']);
+    	$movie->set('id_user',    $req['loginFilter']['id']);
     	$movie->set('id_cinema',  $id_cinema);
     	$movie->set('name',       $name);
-      $movie->set('slug',       Base::slugify($name));
+		$movie->set('slug',       OTools::slugify($name));
     	$movie->set('imdb_url',   $imdb_url);
     	$movie->set('movie_date', $this->web_service->getParsedDate($date));
 
     	if ($cover_status==2){
-        $movie->set('cover_ext', array_pop(explode('.', $cover)));
-    	}
-      else{
-        $movie->set('cover_ext', $this->web_service->getImageExt($cover));
-      }
+	        $movie->set('cover_ext', array_pop(explode('.', $cover)));
+	    	}
+	      else{
+	        $movie->set('cover_ext', $this->web_service->getImageExt($cover));
+	      }
     	$movie->set('ext', $this->web_service->getImageExt($ticket));
 
     	$movie->save();
@@ -284,7 +284,7 @@ class api extends OController{
    */
   function searchMovie($req){
     $status = 'ok';
-    $q      = Base::getParam('q', $req['url_params'], false);
+    $q      = OTools::getParam('q', $req['params'], false);
     $list   = [];
 
     if ($q===false){
@@ -314,7 +314,7 @@ class api extends OController{
    */
   function selectResult($req){
     $status   = 'ok';
-    $id       = Base::getParam('id', $req['url_params'], false);
+    $id       = OTools::getParam('id', $req['params'], false);
     $title    = '';
     $poster   = '';
     $imdb_url = '';
@@ -342,7 +342,7 @@ class api extends OController{
    */
   function getMovie($req){
     $status     = 'ok';
-    $id         = Base::getParam('id', $req['url_params'], false);
+    $id         = OTools::getParam('id', $req['params'], false);
     $id_cinema  = 'null';
     $name       = '';
     $slug       = '';

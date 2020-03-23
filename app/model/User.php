@@ -1,30 +1,30 @@
 <?php
-class User extends OBase{
+class User extends OModel{
   function __construct(){
     $table_name = 'user';
     $model = [
         'id' => [
-          'type'    => Base::PK,
+          'type'    => OCore::PK,
           'comment' => 'Id único de cada usuario'
         ],
         'name' => [
-          'type'     => Base::TEXT,
+          'type'     => OCore::TEXT,
           'size'     => 100,
           'comment'  => 'Nombre de usuario',
           'nullable' => false
         ],
         'pass' => [
-          'type'     => Base::TEXT,
+          'type'     => OCore::TEXT,
           'size'     => 255,
           'comment'  => 'Contraseña cifrada del usuario',
           'nullable' => false
         ],
         'created_at' => [
-          'type'    => Base::CREATED,
+          'type'    => OCore::CREATED,
           'comment' => 'Fecha de creación del registro'
         ],
         'updated_at' => [
-          'type'    => Base::UPDATED,
+          'type'    => OCore::UPDATED,
           'comment' => 'Fecha de última modificación del registro'
         ]
     ];

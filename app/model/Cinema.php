@@ -1,36 +1,36 @@
 <?php
-class Cinema extends OBase{
+class Cinema extends OModel{
   function __construct(){
     $table_name = 'cinema';
     $model = [
         'id' => [
-          'type'    => Base::PK,
+          'type'    => OCore::PK,
           'comment' => 'Id único para cada cine'
         ],
         'id_user' => [
-          'type'     => Base::NUM,
+          'type'     => OCore::NUM,
           'comment'  => 'Id del usuario que añade el cine',
           'nullable' => false,
           'ref'      => 'user.id'
         ],
         'name' => [
-          'type'     => Base::TEXT,
+          'type'     => OCore::TEXT,
           'size'     => 50,
           'comment'  => 'Nombre del cine',
           'nullable' => false
         ],
         'slug' => [
-          'type'     => Base::TEXT,
+          'type'     => OCore::TEXT,
           'size'     => 50,
           'comment'  => 'Slug del nombre del cine',
           'nullable' => false
         ],
         'created_at' => [
-          'type'    => Base::CREATED,
+          'type'    => OCore::CREATED,
           'comment' => 'Fecha de creación del registro'
         ],
         'updated_at' => [
-          'type'    => Base::UPDATED,
+          'type'    => OCore::UPDATED,
           'comment' => 'Fecha de última modificación del registro'
         ]
     ];
