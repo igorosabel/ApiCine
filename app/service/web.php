@@ -1,6 +1,6 @@
 <?php
 class webService extends OService{
-  function __construct($controller=null){
+  function __construct(){
     $this->loadService();
   }
 
