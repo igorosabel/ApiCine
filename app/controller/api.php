@@ -3,7 +3,7 @@ class api extends OController{
   private $web_service;
 
   function __construct(){
-    $this->web_service = new webService($this);
+    $this->web_service = new webService();
   }
 
   /*

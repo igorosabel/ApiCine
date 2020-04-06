@@ -1,11 +1,11 @@
 <?php
 class webService extends OService{
   function __construct($controller=null){
-    $this->setController($controller);
+    $this->loadService();
   }
 
   public function getCinemas($id_user){
-    $db = $this->getController()->getDB();
+    $db = new ODB();
     $sql = "SELECT * FROM `cinema` WHERE `id_user` = ?";
     $db->query($sql, [$id_user]);
     $ret = [];
@@ -21,8 +21,8 @@ class webService extends OService{
   }
 
   public function getMovies($id_user, $page){
-    $db = $this->getController()->getDB();
-    $c  = $this->getController()->getConfig();
+    $db = new ODB();
+    $c  = $this->getConfig();
     $lim = ($page-1) * $c->getExtra('num_por_pag');
 
     $sql = "SELECT * FROM `movie` WHERE `id_user` = ? ORDER BY `movie_date` DESC LIMIT ".$lim.",".$c->getExtra('num_por_pag');
@@ -40,8 +40,8 @@ class webService extends OService{
   }
 
   public function getMoviesPages($id_user){
-    $db = $this->getController()->getDB();
-    $c  = $this->getController()->getConfig();
+    $db = new ODB();
+    $c  = $this->getConfig();
 
     $sql = "SELECT COUNT(*) AS `num` FROM `movie` WHERE `id_user` = ?";
     $db->query($sql, [$id_user]);
@@ -51,7 +51,7 @@ class webService extends OService{
   }
 
   public function getCinemaMovies($cinema){
-    $db = $this->getController()->getDB();
+    $db = new ODB();
     $sql = "SELECT * FROM `movie` WHERE `id_user` = ? AND `id_cinema` = ?";
 
     $db->query($sql, [$cinema->get('id_user'), $cinema->get('id')]);
@@ -77,7 +77,7 @@ class webService extends OService{
   }
 
   public function tmdbList($q){
-    $c = $this->getController()->getConfig();
+    $c = $this->getConfig();
     $query = sprintf("https://api.themoviedb.org/3/search/movie?query=%s&language=es-ES&api_key=%s",
       urlencode($q),
       $c->getExtra('tmdb_api_key')
@@ -118,7 +118,7 @@ class webService extends OService{
   }
 
   public function tmdbDetail($id){
-    $c = $this->getController()->getConfig();
+    $c = $this->getConfig();
     $query = sprintf("https://api.themoviedb.org/3/movie/%s?api_key=%s&language=es-ES",
       $id,
       $c->getExtra('tmdb_api_key')
@@ -167,13 +167,13 @@ class webService extends OService{
   }
 
   public function saveTicket($base64_string, $id, $ext) {
-    $c = $this->getController()->getConfig();
+    $c = $this->getConfig();
     $route = $c->getDir('web').'ticket/'.$id.'.'.$ext;
     $this->saveImage($route, $base64_string);
   }
 
   public function saveCover($base64_string, $id, $ext) {
-    $c = $this->getController()->getConfig();
+    $c = $this->getConfig();
     $route = $c->getDir('web').'cover/'.$id.'.'.$ext;
     $this->saveImage($route, $base64_string);
   }
@@ -190,7 +190,7 @@ class webService extends OService{
   }
 
   public function saveCoverImage($image, $id, $ext){
-    $c = $this->getController()->getConfig();
+    $c = $this->getConfig();
     $route = $c->getDir('web').'cover/'.$id.'.'.$ext;
     if (file_exists($route)){
       unlink($route);
