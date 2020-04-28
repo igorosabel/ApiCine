@@ -1,203 +1,287 @@
-<?php
-class webService extends OService{
-  function __construct(){
-    $this->loadService();
-  }
+<?php declare(strict_types=1);
+class webService extends OService {
+	/**
+	 * Load service tools
+	 */
+	function __construct(){
+		$this->loadService();
+	}
 
-  public function getCinemas($id_user){
-    $db = new ODB();
-    $sql = "SELECT * FROM `cinema` WHERE `id_user` = ?";
-    $db->query($sql, [$id_user]);
-    $ret = [];
+	/**
+	 * Obtiene la lista de cines de un usuario
+	 *
+	 * @param int $id_user Id del usuario
+	 *
+	 * @return array Lista de cines del usuario
+	 */
+	public function getCinemas(int $id_user): array {
+		$db = new ODB();
+		$sql = "SELECT * FROM `cinema` WHERE `id_user` = ?";
+		$db->query($sql, [$id_user]);
+		$ret = [];
 
-    while ($res = $db->next()){
-      $cinema = new Cinema();
-      $cinema->update($res);
+		while ($res = $db->next()) {
+			$cinema = new Cinema();
+			$cinema->update($res);
 
-      array_push($ret, $cinema);
-    }
+			array_push($ret, $cinema);
+		}
 
-    return $ret;
-  }
+		return $ret;
+ 	}
 
-  public function getMovies($id_user, $page){
-    $db = new ODB();
-    $c  = $this->getConfig();
-    $lim = ($page-1) * $c->getExtra('num_por_pag');
+ 	/**
+	 * Obtiene la lista de películas de un usuario
+	 *
+	 * @param int $id_user Id del usuario
+	 *
+	 * @return array Lista de películas del usuario
+	 */
+ 	public function getMovies(int $id_user, int $page): array {
+		$db = new ODB();
+		$c  = $this->getConfig();
+		$lim = ($page-1) * $c->getExtra('num_por_pag');
 
-    $sql = "SELECT * FROM `movie` WHERE `id_user` = ? ORDER BY `movie_date` DESC LIMIT ".$lim.",".$c->getExtra('num_por_pag');
-    $db->query($sql, [$id_user]);
-    $ret = [];
+		$sql = "SELECT * FROM `movie` WHERE `id_user` = ? ORDER BY `movie_date` DESC LIMIT ".$lim.",".$c->getExtra('num_por_pag');
+		$db->query($sql, [$id_user]);
+		$ret = [];
 
-    while ($res = $db->next()){
-      $movie = new Movie();
-      $movie->update($res);
+		while ($res = $db->next()) {
+			$movie = new Movie();
+			$movie->update($res);
 
-      array_push($ret, $movie);
-    }
+			array_push($ret, $movie);
+		}
 
-    return $ret;
-  }
+		return $ret;
+	}
 
-  public function getMoviesPages($id_user){
-    $db = new ODB();
-    $c  = $this->getConfig();
+	/**
+	 * Obtiene el número de páginas de resultados de las películas de un usuario
+	 *
+	 * @param int $id_user Id del usuario
+	 *
+	 * @return int Número de páginas de resultados
+	 */
+	public function getMoviesPages(int $id_user): int {
+		$db = new ODB();
+		$c  = $this->getConfig();
 
-    $sql = "SELECT COUNT(*) AS `num` FROM `movie` WHERE `id_user` = ?";
-    $db->query($sql, [$id_user]);
-    $res = $db->next();
+		$sql = "SELECT COUNT(*) AS `num` FROM `movie` WHERE `id_user` = ?";
+		$db->query($sql, [$id_user]);
+		$res = $db->next();
 
-    return ceil( (int)$res['num'] / $c->getExtra('num_por_pag'));
-  }
+		return intval( ceil( (int)$res['num'] / $c->getExtra('num_por_pag')) );
+	}
 
-  public function getCinemaMovies($cinema){
-    $db = new ODB();
-    $sql = "SELECT * FROM `movie` WHERE `id_user` = ? AND `id_cinema` = ?";
+	/**
+	 * Borrar un cine con todas sus películas
+	 *
+	 * @param Cinema $cinema Objeto cine que hay que borrar
+	 *
+	 * @return void
+	 */
+	public function deleteCinema(Cinema $cinema): void {
+		$movies = $cinema->getMovies();
+		foreach ($movies as $movie) {
+			$movie->deleteFull();
+		}
 
-    $db->query($sql, [$cinema->get('id_user'), $cinema->get('id')]);
-    $ret = [];
+		$cinema->delete();
+	}
 
-    while ($res = $db->next()){
-      $movie = new Movie();
-      $movie->update($res);
+	/**
+	 * Obtiene la lista de películas de The Movie Database
+	 *
+	 * @param string $q Cadena de texto a buscar
+	 *
+	 * @return ?array Lista de resultados obtenidos o null en caso de que haya algún error
+	 */
+	public function tmdbList($q): ?array {
+		$c = $this->getConfig();
+		$query = sprintf($c->getExtra('tmdb_search_url'),
+			urlencode($q),
+			$c->getExtra('tmdb_api_key')
+		);
+		$curl = curl_init();
 
-      array_push($ret, $movie);
-    }
+		curl_setopt_array($curl, [
+			CURLOPT_URL => $query,
+			CURLOPT_RETURNTRANSFER => true,
+			CURLOPT_ENCODING => "",
+			CURLOPT_MAXREDIRS => 10,
+			CURLOPT_TIMEOUT => 30,
+			CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+			CURLOPT_CUSTOMREQUEST => "GET",
+			CURLOPT_POSTFIELDS => "{}",
+		]);
 
-    return $ret;
-  }
+		$response = curl_exec($curl);
+		$err = curl_error($curl);
 
-  public function deleteCinema($cinema){
-    $movies = $this->getCinemaMovies($cinema);
-    foreach ($movies as $movie){
-      $movie->deleteFull();
-    }
+		curl_close($curl);
 
-    $cinema->delete();
-  }
+		if ($err) {
+			$this->getLog()->error('cURL Error #:'.$err);
+			return null;
+		}
+		
+		$list = [];
+		$data = json_decode($response, true);
+		foreach ($data['results'] as $result) {
+			array_push($list, [
+				'id' => $result['id'],
+				'title' => $result['title'],
+				'poster' => sprintf($c->getExtra('tmdb_poster_url'), $result['poster_path'])
+			]);
+		}
+		return $list;
+	}
 
-  public function tmdbList($q){
-    $c = $this->getConfig();
-    $query = sprintf("https://api.themoviedb.org/3/search/movie?query=%s&language=es-ES&api_key=%s",
-      urlencode($q),
-      $c->getExtra('tmdb_api_key')
-    );
-    $curl = curl_init();
+	/**
+	 * Obtiene el detalle de una película
+	 *
+	 * @param int $id Id de una película
+	 *
+	 * @return ?array Detalle de la película o null si ocurre algún error
+	 */
+	public function tmdbDetail(int $id): ?array {
+		$c = $this->getConfig();
+		$query = sprintf($c->getExtra('tmdb_movie_url'),
+			$id,
+			$c->getExtra('tmdb_api_key')
+		);
+		$curl = curl_init();
 
-    curl_setopt_array($curl, [
-      CURLOPT_URL => $query,
-      CURLOPT_RETURNTRANSFER => true,
-      CURLOPT_ENCODING => "",
-      CURLOPT_MAXREDIRS => 10,
-      CURLOPT_TIMEOUT => 30,
-      CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-      CURLOPT_CUSTOMREQUEST => "GET",
-      CURLOPT_POSTFIELDS => "{}",
-    ]);
+		curl_setopt_array($curl, [
+			CURLOPT_URL => $query,
+			CURLOPT_RETURNTRANSFER => true,
+			CURLOPT_ENCODING => "",
+			CURLOPT_MAXREDIRS => 10,
+			CURLOPT_TIMEOUT => 30,
+			CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+			CURLOPT_CUSTOMREQUEST => "GET",
+			CURLOPT_POSTFIELDS => "{}",
+		]);
 
-    $response = curl_exec($curl);
-    $err = curl_error($curl);
+		$response = curl_exec($curl);
+		$err = curl_error($curl);
 
-    curl_close($curl);
+		curl_close($curl);
 
-    if ($err){
-      return "cURL Error #:" . $err;
-    }
-    else {
-      $list = [];
-      $data = json_decode($response, true);
-      foreach ($data['results'] as $result){
-        array_push($list, [
-          'id' => $result['id'],
-          'title' => $result['title'],
-          'poster' => 'http://image.tmdb.org/t/p/w300'.$result['poster_path']
-        ]);
-      }
-      return $list;
-    }
-  }
+		if ($err) {
+			$this->getLog()->error('cURL Error #:'.$err);
+			return null;
+		}
 
-  public function tmdbDetail($id){
-    $c = $this->getConfig();
-    $query = sprintf("https://api.themoviedb.org/3/movie/%s?api_key=%s&language=es-ES",
-      $id,
-      $c->getExtra('tmdb_api_key')
-    );
-    $curl = curl_init();
+		$data = json_decode($response, true);
+		return ['title'    => $data['title'],
+				'poster'   => sprintf($c->getExtra('tmdb_poster_url'), $data['poster_path']),
+				'imdb_url' => sprintf($c->getExtra('imdb_url'), $data['imdb_id'])
+		];
+	}
 
-    curl_setopt_array($curl, [
-      CURLOPT_URL => $query,
-      CURLOPT_RETURNTRANSFER => true,
-      CURLOPT_ENCODING => "",
-      CURLOPT_MAXREDIRS => 10,
-      CURLOPT_TIMEOUT => 30,
-      CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-      CURLOPT_CUSTOMREQUEST => "GET",
-      CURLOPT_POSTFIELDS => "{}",
-    ]);
+	/**
+	 * Devuelve una fecha con un formato concreto (Y-m-d H:i:s)
+	 *
+	 * @param string $str Fecha a formatear
+	 *
+	 * @return string Fecha formateada
+	 */
+	public function getParsedDate(string $str): string {
+		$fec = strtotime($str);
+		return date('Y-m-d H:i:s', $fec);
+	}
 
-    $response = curl_exec($curl);
-    $err = curl_error($curl);
+	/**
+	 * Obtiene la extensión de un archivo de imagen a partir de una cadena de Base64
+	 *
+	 * @param string $img Contenido de la imagen en Base64
+	 *
+	 * @return string Extensión del archivo de imagen
+	 */
+	public function getImageExt(string $img): string {
+		$arr_data = explode(';', $img);
+		$arr_data = explode(':', $arr_data[0]);
+		$arr_data = explode('/', $arr_data[1]);
 
-    curl_close($curl);
+		return $arr_data[1];
+	}
 
-    if ($err){
-      return "cURL Error #:" . $err;
-    }
-    else {
-      $data = json_decode($response, true);
-      return ['title'    => $data['title'],
-              'poster'   => 'http://image.tmdb.org/t/p/w300'.$data['poster_path'],
-              'imdb_url' => 'https://www.imdb.com/title/'.$data['imdb_id'].'/'
-             ];
-    }
-  }
+	/**
+	 * Guarda la imagen del ticket de una película
+	 *
+	 * @param string $base64_string Contenido de la imagen del ticket en Base64
+	 *
+	 * @param int $id Id de la imagen en la base de datos
+	 *
+	 * @param string $ext Extensión del archivo de imagen a guardar
+	 *
+	 * @return void
+	 */
+	public function saveTicket(string $base64_string, int $id, string $ext): void {
+		$c = $this->getConfig();
+		$route = $c->getDir('web').'ticket/'.$id.'.'.$ext;
+		$this->saveImage($route, $base64_string);
+	}
 
-  public function getParsedDate($str){
-    $fec = strtotime($str);
-    return date('Y-m-d H:i:s', $fec);
-  }
+	/**
+	 * Guarda la imagen de la carátula de una película
+	 *
+	 * @param string $base64_string Contenido de la imagen de la carátula en Base64
+	 *
+	 * @param int $id Id de la imagen en la base de datos
+	 *
+	 * @param string $ext Extensión del archivo de imagen a guardar
+	 *
+	 * @return void
+	 */
+	public function saveCover(string $base64_string, int $id, string $ext): void {
+		$c = $this->getConfig();
+		$route = $c->getDir('web').'cover/'.$id.'.'.$ext;
+		$this->saveImage($route, $base64_string);
+	}
 
-  public function getImageExt($img){
-    $arr_data = explode(';', $img);
-    $arr_data = explode(':', $arr_data[0]);
-    $arr_data = explode('/', $arr_data[1]);
+	/**
+	 * Guarda una imagen a partir de una cadena de Base64
+	 *
+	 * @param string $route Ruta del archivo de imagen a guardar
+	 *
+	 * @param string $base64_string Contenido de la imagen en Base64
+	 *
+	 * @return void
+	 */
+	public function saveImage(string $route, string $base64_string): void {
+		if (file_exists($route)){
+			unlink($route);
+		}
 
-    return $arr_data[1];
-  }
+		$ifp = fopen($route, 'wb');
+		$data = explode(',', $base64_string);
+		fwrite($ifp, base64_decode($data[1]));
+		fclose($ifp);
+	}
 
-  public function saveTicket($base64_string, $id, $ext) {
-    $c = $this->getConfig();
-    $route = $c->getDir('web').'ticket/'.$id.'.'.$ext;
-    $this->saveImage($route, $base64_string);
-  }
+	/**
+	 * Guarda una carátula como archivo
+	 *
+	 * @param string $image Contenido de la imagen
+	 *
+	 * @param int $id Id de la imagen en la base de datos
+	 *
+	 * @param string $ext Extensión del archivo de imagen a guardar
+	 *
+	 * @return void
+	 */
+	public function saveCoverImage(string $image, int $id, string $ext): void {
+		$c = $this->getConfig();
+		$route = $c->getDir('web').'cover/'.$id.'.'.$ext;
+		if (file_exists($route)){
+			unlink($route);
+		}
 
-  public function saveCover($base64_string, $id, $ext) {
-    $c = $this->getConfig();
-    $route = $c->getDir('web').'cover/'.$id.'.'.$ext;
-    $this->saveImage($route, $base64_string);
-  }
-
-  public function saveImage($route, $base64_string){
-    if (file_exists($route)){
-      unlink($route);
-    }
-
-    $ifp = fopen($route, 'wb');
-    $data = explode(',', $base64_string);
-    fwrite($ifp, base64_decode($data[1]));
-    fclose($ifp);
-  }
-
-  public function saveCoverImage($image, $id, $ext){
-    $c = $this->getConfig();
-    $route = $c->getDir('web').'cover/'.$id.'.'.$ext;
-    if (file_exists($route)){
-      unlink($route);
-    }
-
-    $ifp = fopen($route, 'wb');
-    fwrite($ifp, $image);
-    fclose($ifp);
-  }
+		$ifp = fopen($route, 'wb');
+		fwrite($ifp, $image);
+		fclose($ifp);
+	}
 }

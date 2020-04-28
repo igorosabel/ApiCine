@@ -1,6 +1,6 @@
 {
-  "status": "{{status}}",
-  "list": [
+	"status": "{{status}}",
+	"list": [
 {{list}}
-  ]
+	]
 }

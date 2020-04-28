@@ -1,385 +1,461 @@
-<?php
-class api extends OController{
-  private $web_service;
+<?php declare(strict_types=1);
+class api extends OController {
+	private $web_service;
 
-  function __construct(){
-    $this->web_service = new webService();
-  }
+	function __construct() {
+		$this->web_service = new webService();
+	}
 
-  /*
-   * Función para iniciar sesión en la aplicación
-   */
-  function login($req){
-    $status = 'ok';
-    $name   = OTools::getParam('name', $req['params'], false);
-    $pass   = OTools::getParam('pass', $req['params'], false);
+	/**
+	 * Función para iniciar sesión en la aplicación
+	 *
+	 * @param ORequest $req Request object with method, headers, parameters and filters used
+	 *
+	 * @return void
+	 */
+	function login(ORequest $req): void {
+		$status = 'ok';
+		$name   = $req->getParam('name', false);
+		$pass   = $req->getParam('pass', false);
 
-    $id    = 'null';
-    $token = '';
+		$id    = 'null';
+		$token = '';
 
-    if ($name===false || $pass===false){
-      $status = 'error';
-    }
+		if ($name===false || $pass===false) {
+			$status = 'error';
+		}
 
-    if ($status=='ok'){
-      $u = new User();
-      if ($u->find(['name'=>$name])){
-        if (password_verify($pass, $u->get('pass'))){
-          $id = $u->get('id');
+		if ($status=='ok') {
+			$u = new User();
+			if ($u->find(['name'=>$name])) {
+				if (password_verify($pass, $u->get('pass'))) {
+					$id = $u->get('id');
 
-          $tk = new OToken($this->getConfig()->getExtra('secret'));
-          $tk->addParam('id',   $id);
-          $tk->addParam('name', $name);
-          $tk->addParam('exp', mktime() + (24 * 60 * 60));
-          $token = $tk->getToken();
-        }
-        else{
-          $status = 'error';
-        }
-      }
-      else{
-        $status = 'error';
-      }
-    }
+					$tk = new OToken($this->getConfig()->getExtra('secret'));
+					$tk->addParam('id',   $id);
+					$tk->addParam('name', $name);
+					$tk->addParam('exp', mktime() + (24 * 60 * 60));
+					$token = $tk->getToken();
+				}
+				else {
+					$status = 'error';
+				}
+			}
+			else {
+				$status = 'error';
+			}
+		}
 
-    $this->getTemplate()->add('status', $status);
-    $this->getTemplate()->add('id',     $id);
-    $this->getTemplate()->add('name',   $name);
-    $this->getTemplate()->add('token',  $token);
-  }
+		$this->getTemplate()->add('status', $status);
+		$this->getTemplate()->add('id',     $id);
+		$this->getTemplate()->add('name',   $name);
+		$this->getTemplate()->add('token',  $token);
+	}
 
-  /*
-   * Función para registrarse en la aplicación
-   */
-  function register($req){
-    $status = 'ok';
-    $name   = OTools::getParam('name', $req['params'], false);
-    $pass   = OTools::getParam('pass', $req['params'], false);
-    $id     = 'null';
-    $token  = '';
+	/**
+	 * Función para registrarse en la aplicación
+	 *
+	 * @param ORequest $req Request object with method, headers, parameters and filters used
+	 *
+	 * @return void
+	 */
+	function register(ORequest $req): void {
+		$status = 'ok';
+		$name   = $req->getParam('name', false);
+		$pass   = $req->getParam('pass', false);
+		$id     = 'null';
+		$token  = '';
 
-    if ($name===false || $pass===false){
-      $status = 'error';
-    }
+		if ($name===false || $pass===false) {
+			$status = 'error';
+		}
 
-    if ($status=='ok'){
-      $u = new User();
-      if ($u->find(['name'=>$name])){
-        $status = 'error-user';
-      }
-      else{
-        $u->set('name', $name);
-        $u->set('pass', password_hash($pass, PASSWORD_BCRYPT));
-        $u->save();
+		if ($status=='ok') {
+			$u = new User();
+			if ($u->find(['name'=>$name])) {
+				$status = 'error-user';
+			}
+			else {
+				$u->set('name', $name);
+				$u->set('pass', password_hash($pass, PASSWORD_BCRYPT));
+				$u->save();
 
-        $id = $u->get('id');
+				$id = $u->get('id');
 
-        $tk = new OToken($this->getConfig()->getExtra('secret'));
-        $tk->addParam('id',   $id);
-        $tk->addParam('name', $name);
-        $tk->addParam('exp', mktime() + (24 * 60 * 60));
-        $token = $tk->getToken();
-      }
-    }
+				$tk = new OToken($this->getConfig()->getExtra('secret'));
+				$tk->addParam('id',   $id);
+				$tk->addParam('name', $name);
+				$tk->addParam('exp', mktime() + (24 * 60 * 60));
+				$token = $tk->getToken();
+			}
+		}
 
-    $this->getTemplate()->add('status', $status);
-    $this->getTemplate()->add('id',     $id);
-    $this->getTemplate()->add('name',   $name);
-    $this->getTemplate()->add('token',  $token);
-  }
+		$this->getTemplate()->add('status', $status);
+		$this->getTemplate()->add('id',     $id);
+		$this->getTemplate()->add('name',   $name);
+		$this->getTemplate()->add('token',  $token);
+	}
 
-  /*
-   * Función para obtener la lista de cines
-   */
-  function getCinemas($req){
-    $status = 'ok';
-    if (!array_key_exists('loginFilter', $req) || !array_key_exists('id', $req['loginFilter'])){
-      $status = 'error';
-    }
-    $list = [];
+	/**
+	 * Función para obtener la lista de cines
+	 *
+	 * @param ORequest $req Request object with method, headers, parameters and filters used
+	 *
+	 * @return void
+	 */
+	function getCinemas(ORequest $req): void {
+		$status = 'ok';
+		$filter = $req->getFilter('loginFilter');
 
-    if ($status=='ok'){
-      $list = $this->web_service->getCinemas($req['loginFilter']['id']);
-    }
+		if (is_null($filter) || !array_key_exists('id', $filter)) {
+			$status = 'error';
+		}
+		$list = [];
 
-    $this->getTemplate()->add('status', $status);
-    $this->getTemplate()->addPartial('list', 'api/cinemas', ['list'=>$list, 'extra'=>'nourlencode']);
-  }
+		if ($status=='ok') {
+			$list = $this->web_service->getCinemas($filter['id']);
+		}
 
-  /*
-   * Función para añadir un nuevo cine
-   */
-  function addCinema($req){
-    $status = 'ok';
-    $name   = OTools::getParam('name', $req['params'], false);
+		$this->getTemplate()->add('status', $status);
+		$this->getTemplate()->addPartial('list', 'api/cinemas', ['list'=>$list, 'extra'=>'nourlencode']);
+	}
 
-    if ($name===false){
-      $status = 'error';
-    }
+	/**
+	 * Función para añadir un nuevo cine
+	 *
+	 * @param ORequest $req Request object with method, headers, parameters and filters used
+	 *
+	 * @return void
+	 */
+	function addCinema(ORequest $req): void {
+		$status = 'ok';
+		$name   = $req->getParam('name', false);
+		$filter = $req->getFilter('loginFilter');
 
-    if ($status=='ok'){
-      $cinema = new Cinema();
-      $cinema->set('id_user', $req['loginFilter']['id']);
-      $cinema->set('name', $name);
-      $cinema->set('slug', OTools::slugify($name));
+		if ($name===false || is_null($filter) || !array_key_exists('id', $filter)) {
+			$status = 'error';
+		}
 
-      $cinema->save();
-    }
+		if ($status=='ok') {
+			$cinema = new Cinema();
+			$cinema->set('id_user', $filter['id']);
+			$cinema->set('name', $name);
+			$cinema->set('slug', OTools::slugify($name));
 
-    $this->getTemplate()->add('status', $status);
-  }
+			$cinema->save();
+		}
 
-  /*
-   * Función para borrar un cine
-   */
-  function deleteCinema($req){
-    $status = 'ok';
-    $id     = OTools::getParam('id', $req['params'], false);
+		$this->getTemplate()->add('status', $status);
+	}
 
-    if ($id===false){
-      $status = 'error';
-    }
+	/**
+	 * Función para borrar un cine
+	 *
+	 * @param ORequest $req Request object with method, headers, parameters and filters used
+	 *
+	 * @return void
+	 */
+	function deleteCinema(ORequest $req): void {
+		$status = 'ok';
+		$id     = $req->getParam('id', false);
+		$filter = $req->getFilter('loginFilter');
 
-    if ($status=='ok'){
-      $cinema = new Cinema();
-      if ($cinema->find(['id'=>$id])){
-        $this->web_service->deleteCinema($cinema);
-      }
-      else{
-        $status = 'error';
-      }
-    }
+		if ($id===false || is_null($filter) || !array_key_exists('id', $filter)) {
+			$status = 'error';
+		}
 
-    $this->getTemplate()->add('status', $status);
-  }
+		if ($status=='ok') {
+			$cinema = new Cinema();
+			if ($cinema->find(['id'=>$id])) {
+				if ($cinema->get('id_user')==$filter['id']) {
+					$this->web_service->deleteCinema($cinema);
+				}
+				else {
+					$status = 'error';
+				}
+			}
+			else {
+				$status = 'error';
+			}
+		}
 
-  /*
-   * Función para editar el nombre de un cine
-   */
-  function editCinema($req){
-    $status = 'ok';
-    $id     = OTools::getParam('id',   $req['params'], false);
-    $name   = OTools::getParam('name', $req['params'], false);
+		$this->getTemplate()->add('status', $status);
+	}
 
-    if ($id===false || $name===false){
-      $status = 'error';
-    }
+	/**
+	 * Función para editar el nombre de un cine
+	 *
+	 * @param ORequest $req Request object with method, headers, parameters and filters used
+	 *
+	 * @return void
+	 */
+	function editCinema(ORequest $req): void {
+		$status = 'ok';
+		$id     = $req->getParam('id',   false);
+		$name   = $req->getParam('name', false);
+		$filter = $req->getFilter('loginFilter');
 
-    if ($status=='ok'){
-      $cinema = new Cinema();
-      if ($cinema->find(['id'=>$id])){
-        $cinema->set('name', $name);
-        $cinema->save();
-      }
-      else{
-        $status = 'error';
-      }
-    }
+		if ($id===false || $name===false || is_null($filter) || !array_key_exists('id', $filter)) {
+			$status = 'error';
+		}
 
-    $this->getTemplate()->add('status', $status);
-  }
+		if ($status=='ok') {
+			$cinema = new Cinema();
+			if ($cinema->find(['id'=>$id])) {
+				if ($cinema->get('id_user')==$filter['id']) {
+					$cinema->set('name', $name);
+					$cinema->save();
+				}
+				else {
+					$status = 'error';
+				}
+			}
+			else {
+				$status = 'error';
+			}
+		}
 
-  /*
-   * Función para obtener la lista de las últimas películas
-   */
-  function getMovies($req){
-    $status = 'ok';
-    $page   = OTools::getParam('page', $req['params'], false);
-    if (!array_key_exists('loginFilter', $req) || !array_key_exists('id', $req['loginFilter'])){
-      $status = 'error';
-    }
-    if ($page===false){
-      $status = 'error';
-    }
-    $list      = [];
-    $num_pages = 0;
+		$this->getTemplate()->add('status', $status);
+	}
 
-    if ($status=='ok'){
-      $list = $this->web_service->getMovies($req['loginFilter']['id'], $page);
-      $num_pages = $this->web_service->getMoviesPages($req['loginFilter']['id']);
-    }
+	/**
+	 * Función para obtener la lista de las últimas películas
+	 *
+	 * @param ORequest $req Request object with method, headers, parameters and filters used
+	 *
+	 * @return void
+	 */
+	function getMovies(ORequest $req): void {
+		$status = 'ok';
+		$page   = $req->getParamInt('page', false);
+		$filter = $req->getFilter('loginFilter');
+		
+		if ($page===false || is_null($filter) || !array_key_exists('id', $filter)) {
+			$status = 'error';
+		}
+		$list      = [];
+		$num_pages = 0;
 
-    $this->getTemplate()->add('status',    $status);
-    $this->getTemplate()->add('num_pages', $num_pages);
-    $this->getTemplate()->addPartial('list', 'api/movies', ['list'=>$list, 'extra'=>'nourlencode']);
-  }
+		if ($status=='ok') {
+			$list      = $this->web_service->getMovies($filter['id'], $page);
+			$num_pages = $this->web_service->getMoviesPages($filter['id']);
+		}
 
-  /*
-   * Función para obtener la lista de las últimas películas de un cine concreto
-   */
-  function getCinemaMovies($req){
-    $status = 'ok';
-    $id     = OTools::getParam('id', $req['params'], false);
-    $list   = [];
+		$this->getTemplate()->add('status',    $status);
+		$this->getTemplate()->add('num_pages', $num_pages);
+		$this->getTemplate()->addPartial('list', 'api/movies', ['list'=>$list, 'extra'=>'nourlencode']);
+	}
 
-    if ($id===false){
-      $status = 'error';
-    }
+	/**
+	 * Función para obtener la lista de las últimas películas de un cine concreto
+	 *
+	 * @param ORequest $req Request object with method, headers, parameters and filters used
+	 *
+	 * @return void
+	 */
+	function getCinemaMovies(ORequest $req): void {
+		$status = 'ok';
+		$id     = $req->getParam('id', false);
+		$filter = $req->getFilter('loginFilter');
+		$list   = [];
 
-    if ($status=='ok'){
-      $cinema = new Cinema();
-      if ($cinema->find(['id'=>$id])){
-        $list = $cinema->getMovies();
-      }
-      else{
-        $status = 'error';
-      }
-    }
+		if ($id===false || is_null($filter) || !array_key_exists('id', $filter)) {
+			$status = 'error';
+		}
 
-    $this->getTemplate()->add('status', $status);
-    $this->getTemplate()->addPartial('list', 'api/movies', ['list'=>$list, 'extra'=>'nourlencode']);
-  }
+		if ($status=='ok') {
+			$cinema = new Cinema();
+			if ($cinema->find(['id'=>$id])) {
+				if ($cinema->get('id_user')==$filter['id']) {
+					$list = $cinema->getMovies();
+				}
+				else {
+					$status = 'error';
+				}
+			}
+			else {
+				$status = 'error';
+			}
+		}
 
-  /*
-   * Función para guardar una nueva entrada
-   */
-  function saveMovie($req){
-    $status       = 'ok';
-    $id_cinema    = OTools::getParam('idCinema',    $req['params'], false);
-  	$name         = OTools::getParam('name',        $req['params'], false);
-  	$cover        = OTools::getParam('cover',       $req['params'], false);
-  	$cover_status = OTools::getParam('coverStatus', $req['params'], false);
-  	$ticket       = OTools::getParam('ticket',      $req['params'], false);
-  	$imdb_url     = OTools::getParam('imdbUrl',     $req['params'], false);
-  	$date         = OTools::getParam('date',        $req['params'], false);
+		$this->getTemplate()->add('status', $status);
+		$this->getTemplate()->addPartial('list', 'api/movies', ['list'=>$list, 'extra'=>'nourlencode']);
+	}
 
-  	if ($id_cinema===false || $name===false || $cover===false || $cover_status===false || $ticket===false || $imdb_url===false || $date===false){
-    	$status = 'error';
-  	}
+	/**
+	 * Función para guardar una nueva entrada
+	 *
+	 * @param ORequest $req Request object with method, headers, parameters and filters used
+	 *
+	 * @return void
+	 */
+	function saveMovie(ORequest $req): void {
+		$status       = 'ok';
+		$id_cinema    = $req->getParam('idCinema',    false);
+		$name         = $req->getParam('name',        false);
+		$cover        = $req->getParam('cover',       false);
+		$cover_status = $req->getParam('coverStatus', false);
+		$ticket       = $req->getParam('ticket',      false);
+		$imdb_url     = $req->getParam('imdbUrl',     false);
+		$date         = $req->getParam('date',        false);
+		$filter       = $req->getFilter('loginFilter');
 
-  	if ($status=='ok'){
-    	$movie = new Movie();
-    	$movie->set('id_user',    $req['loginFilter']['id']);
-    	$movie->set('id_cinema',  $id_cinema);
-    	$movie->set('name',       $name);
-		$movie->set('slug',       OTools::slugify($name));
-    	$movie->set('imdb_url',   $imdb_url);
-    	$movie->set('movie_date', $this->web_service->getParsedDate($date));
+		if ($id_cinema===false || $name===false || $cover===false || $cover_status===false || $ticket===false || $imdb_url===false || $date===false || is_null($filter) || !array_key_exists('id', $filter)) {
+			$status = 'error';
+		}
 
-    	if ($cover_status==2){
-	        $movie->set('cover_ext', array_pop(explode('.', $cover)));
-	    	}
-	      else{
-	        $movie->set('cover_ext', $this->web_service->getImageExt($cover));
-	      }
-    	$movie->set('ext', $this->web_service->getImageExt($ticket));
+		if ($status=='ok') {
+			$movie = new Movie();
+			$movie->set('id_user',    $filter['id']);
+			$movie->set('id_cinema',  $id_cinema);
+			$movie->set('name',       $name);
+			$movie->set('slug',       OTools::slugify($name));
+			$movie->set('imdb_url',   $imdb_url);
+			$movie->set('movie_date', $this->web_service->getParsedDate($date));
 
-    	$movie->save();
+			if ($cover_status==2) {
+				$movie->set('cover_ext', array_pop(explode('.', $cover)));
+			}
+			else {
+				$movie->set('cover_ext', $this->web_service->getImageExt($cover));
+			}
+			$movie->set('ext', $this->web_service->getImageExt($ticket));
+			$movie->save();
 
-    	$this->web_service->saveTicket($ticket, $movie->get('id'), $movie->get('ext'));
-      if ($cover_status==2){
-        $tmdb_cover = file_get_contents($cover);
-        $this->web_service->saveCoverImage($tmdb_cover, $movie->get('id'), $movie->get('cover_ext'));
-      }
-      else{
-    	  $this->web_service->saveCover($cover, $movie->get('id'), $movie->get('cover_ext'));
-      }
-  	}
+			$this->web_service->saveTicket($ticket, $movie->get('id'), $movie->get('ext'));
+			if ($cover_status==2) {
+				$tmdb_cover = file_get_contents($cover);
+				$this->web_service->saveCoverImage($tmdb_cover, $movie->get('id'), $movie->get('cover_ext'));
+			}
+			else {
+				$this->web_service->saveCover($cover, $movie->get('id'), $movie->get('cover_ext'));
+			}
+		}
 
-  	$this->getTemplate()->add('status', $status);
-  }
+		$this->getTemplate()->add('status', $status);
+	}
 
-  /*
-   * Función para buscar películas en The Movie Data Base
-   */
-  function searchMovie($req){
-    $status = 'ok';
-    $q      = OTools::getParam('q', $req['params'], false);
-    $list   = [];
+	/**
+	 * Función para buscar películas en The Movie Data Base
+	 *
+	 * @param ORequest $req Request object with method, headers, parameters and filters used
+	 *
+	 * @return void
+	 */
+	function searchMovie(ORequest $req): void {
+		$status = 'ok';
+		$q      = $req->getParam('q', false);
+		$filter = $req->getFilter('loginFilter');
+		$list   = [];
 
-    if ($q===false){
-      $status = 'error';
-    }
+		if ($q===false || is_null($filter) || !array_key_exists('id', $filter)) {
+			$status = 'error';
+		}
 
-    if ($status=='ok'){
-      /*
-        // Lista de películas
-        https://api.themoviedb.org/3/search/movie?api_key=f54cd33501fddec9a5f6a82d27c61207&language=es-ES&query=angel%20de%20combate
-        // Detalle de película
-        https://api.themoviedb.org/3/movie/399579?api_key=f54cd33501fddec9a5f6a82d27c61207&language=es-ES
-        // Poster
-        http://image.tmdb.org/t/p/w300/XXXXX
-        // IMDB URL
-        https://www.imdb.com/title/XXXXX/
-      */
-      $list = $this->web_service->tmdbList($q);
-    }
+		if ($status=='ok') {
+			/*
+				// Lista de películas
+				https://api.themoviedb.org/3/search/movie?api_key=f54cd33501fddec9a5f6a82d27c61207&language=es-ES&query=angel%20de%20combate
+				// Detalle de película
+				https://api.themoviedb.org/3/movie/399579?api_key=f54cd33501fddec9a5f6a82d27c61207&language=es-ES
+				// Poster
+				http://image.tmdb.org/t/p/w300/XXXXX
+				// IMDB URL
+				https://www.imdb.com/title/XXXXX/
+			*/
+			$list = $this->web_service->tmdbList($q);
+		}
 
-    $this->getTemplate()->add('status', $status);
-    $this->getTemplate()->addPartial('list', 'api/tmdbList', ['list'=>$list, 'extra'=>'nourlencode']);
-  }
+		$this->getTemplate()->add('status', $status);
+		$this->getTemplate()->addPartial('list', 'api/tmdbList', ['list'=>$list, 'extra'=>'nourlencode']);
+	}
 
-  /*
-   * Función para obtener el detalle de una película en The Movie Data Base
-   */
-  function selectResult($req){
-    $status   = 'ok';
-    $id       = OTools::getParam('id', $req['params'], false);
-    $title    = '';
-    $poster   = '';
-    $imdb_url = '';
+	/**
+	 * Función para obtener el detalle de una película en The Movie Data Base
+	 *
+	 * @param ORequest $req Request object with method, headers, parameters and filters used
+	 *
+	 * @return void
+	 */
+	function selectResult(ORequest $req): void {
+		$status   = 'ok';
+		$id       = $req->getParam('id', false);
+		$filter   = $req->getFilter('loginFilter');
+		$title    = '';
+		$poster   = '';
+		$imdb_url = '';
 
-    if ($id===false){
-      $status = 'error';
-    }
+		if ($id===false || is_null($filter) || !array_key_exists('id', $filter)) {
+			$status = 'error';
+		}
 
-    if ($status=='ok'){
-      $detail = $this->web_service->tmdbDetail($id);
+		if ($status=='ok') {
+			$detail = $this->web_service->tmdbDetail($id);
 
-      $title    = $detail['title'];
-      $poster   = $detail['poster'];
-      $imdb_url = $detail['imdb_url'];
-    }
+			$title    = $detail['title'];
+			$poster   = $detail['poster'];
+			$imdb_url = $detail['imdb_url'];
+		}
 
-    $this->getTemplate()->add('status', $status);
-    $this->getTemplate()->add('title', $title);
-    $this->getTemplate()->add('poster', $poster);
-    $this->getTemplate()->add('imdb_url', $imdb_url);
-  }
+		$this->getTemplate()->add('status', $status);
+		$this->getTemplate()->add('title', $title);
+		$this->getTemplate()->add('poster', $poster);
+		$this->getTemplate()->add('imdb_url', $imdb_url);
+	}
 
-  /*
-   * Función para obtener el detalle de una película
-   */
-  function getMovie($req){
-    $status     = 'ok';
-    $id         = OTools::getParam('id', $req['params'], false);
-    $id_cinema  = 'null';
-    $name       = '';
-    $slug       = '';
-    $cover      = '';
-    $ticket     = '';
-    $imdb_url   = '';
-    $movie_date = '';
+	/**
+	 * Función para obtener el detalle de una película
+	 *
+	 * @param ORequest $req Request object with method, headers, parameters and filters used
+	 *
+	 * @return void
+	 */
+	function getMovie(ORequest $req): void {
+		$status     = 'ok';
+		$id         = $req->getParam('id', false);
+		$filter     = $req->getFilter('loginFilter');
+		$id_cinema  = 'null';
+		$name       = '';
+		$slug       = '';
+		$cover      = '';
+		$ticket     = '';
+		$imdb_url   = '';
+		$movie_date = '';
 
-    if ($id===false){
-      $status = 'error';
-      $id = 'null';
-    }
+		if ($id===false || is_null($filter) || !array_key_exists('id', $filter)) {
+			$status = 'error';
+			$id = 'null';
+		}
 
-    if ($status=='ok'){
-      $movie = new Movie();
-      if ($movie->find(['id'=>$id])){
-        $id_cinema  = $movie->get('id_cinema');
-    	  $name       = $movie->get('name');
-        $slug       = $movie->get('slug');
-    	  $cover      = $movie->getCoverUrl();
-        $ticket     = $movie->getTicketUrl();
-        $imdb_url   = $movie->get('imdb_url');
-        $movie_date = $movie->get('movie_date', 'd/m/Y');
-      }
-      else{
-        $status = 'error';
-      }
-    }
+		if ($status=='ok') {
+			$movie = new Movie();
+			if ($movie->find(['id'=>$id])) {
+				if ($movie->get('id_user')==$filter['id']) {
+					$id_cinema  = $movie->get('id_cinema');
+					$name       = $movie->get('name');
+					$slug       = $movie->get('slug');
+					$cover      = $movie->getCoverUrl();
+					$ticket     = $movie->getTicketUrl();
+					$imdb_url   = $movie->get('imdb_url');
+					$movie_date = $movie->get('movie_date', 'd/m/Y');
+				}
+				else {
+					$status = 'error';
+				}
+			}
+			else {
+				$status = 'error';
+			}
+		}
 
-    $this->getTemplate()->add('status',     $status);
-    $this->getTemplate()->add('id',         $id);
-    $this->getTemplate()->add('id_cinema',  $id_cinema);
-    $this->getTemplate()->add('name',       $name);
-    $this->getTemplate()->add('slug',       $slug);
-    $this->getTemplate()->add('cover',      $cover);
-    $this->getTemplate()->add('ticket',     $ticket);
-    $this->getTemplate()->add('imdb_url',   $imdb_url);
-    $this->getTemplate()->add('movie_date', $movie_date);
-  }
+		$this->getTemplate()->add('status',     $status);
+		$this->getTemplate()->add('id',         $id);
+		$this->getTemplate()->add('id_cinema',  $id_cinema);
+		$this->getTemplate()->add('name',       $name);
+		$this->getTemplate()->add('slug',       $slug);
+		$this->getTemplate()->add('cover',      $cover);
+		$this->getTemplate()->add('ticket',     $ticket);
+		$this->getTemplate()->add('imdb_url',   $imdb_url);
+		$this->getTemplate()->add('movie_date', $movie_date);
+	}
 }

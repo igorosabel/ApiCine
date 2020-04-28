@@ -1,7 +1,7 @@
 {
-  "status": "{{status}}",
-  "numPages": {{num_pages}},
-  "list": [
+	"status": "{{status}}",
+	"numPages": {{num_pages}},
+	"list": [
 {{list}}
-  ]
+	]
 }
