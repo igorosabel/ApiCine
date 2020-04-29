@@ -112,8 +112,7 @@ class webService extends OService {
 			CURLOPT_MAXREDIRS => 10,
 			CURLOPT_TIMEOUT => 30,
 			CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-			CURLOPT_CUSTOMREQUEST => "GET",
-			CURLOPT_POSTFIELDS => "{}",
+			CURLOPT_CUSTOMREQUEST => "GET"
 		]);
 
 		$response = curl_exec($curl);
@@ -128,6 +127,7 @@ class webService extends OService {
 		
 		$list = [];
 		$data = json_decode($response, true);
+
 		foreach ($data['results'] as $result) {
 			array_push($list, [
 				'id' => $result['id'],
@@ -160,8 +160,7 @@ class webService extends OService {
 			CURLOPT_MAXREDIRS => 10,
 			CURLOPT_TIMEOUT => 30,
 			CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-			CURLOPT_CUSTOMREQUEST => "GET",
-			CURLOPT_POSTFIELDS => "{}",
+			CURLOPT_CUSTOMREQUEST => "GET"
 		]);
 
 		$response = curl_exec($curl);

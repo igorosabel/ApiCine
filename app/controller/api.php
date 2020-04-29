@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 class api extends OController {
-	private $web_service;
+	private ?webService $web_service = null;
 
 	function __construct() {
 		$this->web_service = new webService();
@@ -15,13 +15,13 @@ class api extends OController {
 	 */
 	function login(ORequest $req): void {
 		$status = 'ok';
-		$name   = $req->getParam('name', false);
-		$pass   = $req->getParam('pass', false);
+		$name   = $req->getParamString('name');
+		$pass   = $req->getParamString('pass');
 
 		$id    = 'null';
 		$token = '';
 
-		if ($name===false || $pass===false) {
+		if (is_null($name) || is_null($pass)) {
 			$status = 'error';
 		}
 
@@ -61,12 +61,12 @@ class api extends OController {
 	 */
 	function register(ORequest $req): void {
 		$status = 'ok';
-		$name   = $req->getParam('name', false);
-		$pass   = $req->getParam('pass', false);
+		$name   = $req->getParamString('name');
+		$pass   = $req->getParamString('pass');
 		$id     = 'null';
 		$token  = '';
 
-		if ($name===false || $pass===false) {
+		if (is_null($name) || is_null($pass)) {
 			$status = 'error';
 		}
 
@@ -129,10 +129,10 @@ class api extends OController {
 	 */
 	function addCinema(ORequest $req): void {
 		$status = 'ok';
-		$name   = $req->getParam('name', false);
+		$name   = $req->getParamString('name');
 		$filter = $req->getFilter('loginFilter');
 
-		if ($name===false || is_null($filter) || !array_key_exists('id', $filter)) {
+		if (is_null($name) || is_null($filter) || !array_key_exists('id', $filter)) {
 			$status = 'error';
 		}
 
@@ -157,10 +157,10 @@ class api extends OController {
 	 */
 	function deleteCinema(ORequest $req): void {
 		$status = 'ok';
-		$id     = $req->getParam('id', false);
+		$id     = $req->getParamInt('id');
 		$filter = $req->getFilter('loginFilter');
 
-		if ($id===false || is_null($filter) || !array_key_exists('id', $filter)) {
+		if (is_null($id) || is_null($filter) || !array_key_exists('id', $filter)) {
 			$status = 'error';
 		}
 
@@ -191,11 +191,11 @@ class api extends OController {
 	 */
 	function editCinema(ORequest $req): void {
 		$status = 'ok';
-		$id     = $req->getParam('id',   false);
-		$name   = $req->getParam('name', false);
+		$id     = $req->getParamInt('id');
+		$name   = $req->getParamString('name');
 		$filter = $req->getFilter('loginFilter');
 
-		if ($id===false || $name===false || is_null($filter) || !array_key_exists('id', $filter)) {
+		if (is_null($id) || is_null($name) || is_null($filter) || !array_key_exists('id', $filter)) {
 			$status = 'error';
 		}
 
@@ -227,10 +227,10 @@ class api extends OController {
 	 */
 	function getMovies(ORequest $req): void {
 		$status = 'ok';
-		$page   = $req->getParamInt('page', false);
+		$page   = $req->getParamInt('page');
 		$filter = $req->getFilter('loginFilter');
 		
-		if ($page===false || is_null($filter) || !array_key_exists('id', $filter)) {
+		if (is_null($page) || is_null($filter) || !array_key_exists('id', $filter)) {
 			$status = 'error';
 		}
 		$list      = [];
@@ -255,11 +255,11 @@ class api extends OController {
 	 */
 	function getCinemaMovies(ORequest $req): void {
 		$status = 'ok';
-		$id     = $req->getParam('id', false);
+		$id     = $req->getParamInt('id');
 		$filter = $req->getFilter('loginFilter');
 		$list   = [];
 
-		if ($id===false || is_null($filter) || !array_key_exists('id', $filter)) {
+		if (is_null($id) || is_null($filter) || !array_key_exists('id', $filter)) {
 			$status = 'error';
 		}
 
@@ -291,16 +291,16 @@ class api extends OController {
 	 */
 	function saveMovie(ORequest $req): void {
 		$status       = 'ok';
-		$id_cinema    = $req->getParam('idCinema',    false);
-		$name         = $req->getParam('name',        false);
+		$id_cinema    = $req->getParamInt('idCinema');
+		$name         = $req->getParamString('name');
 		$cover        = $req->getParam('cover',       false);
 		$cover_status = $req->getParam('coverStatus', false);
 		$ticket       = $req->getParam('ticket',      false);
-		$imdb_url     = $req->getParam('imdbUrl',     false);
-		$date         = $req->getParam('date',        false);
+		$imdb_url     = $req->getParamString('imdbUrl');
+		$date         = $req->getParamString('date');
 		$filter       = $req->getFilter('loginFilter');
 
-		if ($id_cinema===false || $name===false || $cover===false || $cover_status===false || $ticket===false || $imdb_url===false || $date===false || is_null($filter) || !array_key_exists('id', $filter)) {
+		if (is_null($id_cinema) || is_null($name) || $cover===false || $cover_status===false || $ticket===false || is_null($imdb_url) || is_null($date) || is_null($filter) || !array_key_exists('id', $filter)) {
 			$status = 'error';
 		}
 
@@ -344,11 +344,11 @@ class api extends OController {
 	 */
 	function searchMovie(ORequest $req): void {
 		$status = 'ok';
-		$q      = $req->getParam('q', false);
+		$q      = $req->getParamString('q');
 		$filter = $req->getFilter('loginFilter');
 		$list   = [];
 
-		if ($q===false || is_null($filter) || !array_key_exists('id', $filter)) {
+		if (is_null($q) || is_null($filter) || !array_key_exists('id', $filter)) {
 			$status = 'error';
 		}
 
@@ -379,13 +379,13 @@ class api extends OController {
 	 */
 	function selectResult(ORequest $req): void {
 		$status   = 'ok';
-		$id       = $req->getParam('id', false);
+		$id       = $req->getParamInt('id');
 		$filter   = $req->getFilter('loginFilter');
 		$title    = '';
 		$poster   = '';
 		$imdb_url = '';
 
-		if ($id===false || is_null($filter) || !array_key_exists('id', $filter)) {
+		if (is_null($id) || is_null($filter) || !array_key_exists('id', $filter)) {
 			$status = 'error';
 		}
 
@@ -412,7 +412,7 @@ class api extends OController {
 	 */
 	function getMovie(ORequest $req): void {
 		$status     = 'ok';
-		$id         = $req->getParam('id', false);
+		$id         = $req->getParamInt('id');
 		$filter     = $req->getFilter('loginFilter');
 		$id_cinema  = 'null';
 		$name       = '';
@@ -422,7 +422,7 @@ class api extends OController {
 		$imdb_url   = '';
 		$movie_date = '';
 
-		if ($id===false || is_null($filter) || !array_key_exists('id', $filter)) {
+		if (is_null($id) || is_null($filter) || !array_key_exists('id', $filter)) {
 			$status = 'error';
 			$id = 'null';
 		}
