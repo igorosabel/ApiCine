@@ -8,10 +8,8 @@ class OToken {
 	 * Sets signature secret string on startup
 	 *
 	 * @param string $secret String used to sign the resulting token or check a tokens validity
-	 *
-	 * @return void
 	 */
-	function __construct(string $secret): void {
+	function __construct(string $secret) {
 		$this->secret = $secret;
 	}
 
