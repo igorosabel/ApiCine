@@ -48,7 +48,7 @@ class Cinema extends OModel {
 		return $this->get('name');
 	}
 
-	private $movies = null;
+	private ?array $movies = null;
 
 	/**
 	 * Devuelve la lista de películas vistas en un cine
