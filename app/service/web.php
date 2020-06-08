@@ -3,7 +3,7 @@ class webService extends OService {
 	/**
 	 * Load service tools
 	 */
-	function __construct(){
+	function __construct() {
 		$this->loadService();
 	}
 
@@ -124,7 +124,7 @@ class webService extends OService {
 			$this->getLog()->error('cURL Error #:'.$err);
 			return null;
 		}
-		
+
 		$list = [];
 		$data = json_decode($response, true);
 
