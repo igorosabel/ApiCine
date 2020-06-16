@@ -1,5 +1,5 @@
 <?php declare(strict_types=1);
-class findTask {
+class findTask extends OTask {
 	public function __toString() {
 		return "find: Función para buscar películas en The Movie Database";
 	}
