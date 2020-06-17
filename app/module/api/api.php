@@ -1,5 +1,5 @@
 <?php declare(strict_types=1);
-class api extends OController {
+class api extends OModule {
 	private ?webService $web_service = null;
 
 	function __construct() {
