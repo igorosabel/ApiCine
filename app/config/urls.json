@@ -7,7 +7,6 @@
 				{
 					"id": "closed",
 					"url": "/closed",
-					"module": "home",
 					"action": "closed",
 					"comment": "Página temporal, sitio cerrado",
 					"layout": "blank"
@@ -15,14 +14,12 @@
 				{
 					"id": "index",
 					"url": "/",
-					"module": "home",
 					"action": "index",
 					"comment": "Home pública"
 				},
 				{
 					"id": "notFound",
 					"url": "/not-found",
-					"module": "home",
 					"action": "notFound",
 					"comment": "Página de error 404"
 				}
