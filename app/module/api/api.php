@@ -13,7 +13,7 @@ class api extends OModule {
 	 *
 	 * @return void
 	 */
-	function login(ORequest $req): void {
+	public function login(ORequest $req): void {
 		$status = 'ok';
 		$name   = $req->getParamString('name');
 		$pass   = $req->getParamString('pass');
@@ -59,7 +59,7 @@ class api extends OModule {
 	 *
 	 * @return void
 	 */
-	function register(ORequest $req): void {
+	public function register(ORequest $req): void {
 		$status = 'ok';
 		$name   = $req->getParamString('name');
 		$pass   = $req->getParamString('pass');
@@ -103,7 +103,7 @@ class api extends OModule {
 	 *
 	 * @return void
 	 */
-	function getCinemas(ORequest $req): void {
+	public function getCinemas(ORequest $req): void {
 		$status = 'ok';
 		$filter = $req->getFilter('loginFilter');
 
@@ -127,7 +127,7 @@ class api extends OModule {
 	 *
 	 * @return void
 	 */
-	function addCinema(ORequest $req): void {
+	public function addCinema(ORequest $req): void {
 		$status = 'ok';
 		$name   = $req->getParamString('name');
 		$filter = $req->getFilter('loginFilter');
@@ -155,7 +155,7 @@ class api extends OModule {
 	 *
 	 * @return void
 	 */
-	function deleteCinema(ORequest $req): void {
+	public function deleteCinema(ORequest $req): void {
 		$status = 'ok';
 		$id     = $req->getParamInt('id');
 		$filter = $req->getFilter('loginFilter');
@@ -189,7 +189,7 @@ class api extends OModule {
 	 *
 	 * @return void
 	 */
-	function editCinema(ORequest $req): void {
+	public function editCinema(ORequest $req): void {
 		$status = 'ok';
 		$id     = $req->getParamInt('id');
 		$name   = $req->getParamString('name');
@@ -225,7 +225,7 @@ class api extends OModule {
 	 *
 	 * @return void
 	 */
-	function getMovies(ORequest $req): void {
+	public function getMovies(ORequest $req): void {
 		$status = 'ok';
 		$page   = $req->getParamInt('page');
 		$filter = $req->getFilter('loginFilter');
@@ -253,7 +253,7 @@ class api extends OModule {
 	 *
 	 * @return void
 	 */
-	function getCinemaMovies(ORequest $req): void {
+	public function getCinemaMovies(ORequest $req): void {
 		$status = 'ok';
 		$id     = $req->getParamInt('id');
 		$filter = $req->getFilter('loginFilter');
@@ -289,7 +289,7 @@ class api extends OModule {
 	 *
 	 * @return void
 	 */
-	function saveMovie(ORequest $req): void {
+	public function saveMovie(ORequest $req): void {
 		$status       = 'ok';
 		$id_cinema    = $req->getParamInt('idCinema');
 		$name         = $req->getParamString('name');
@@ -342,7 +342,7 @@ class api extends OModule {
 	 *
 	 * @return void
 	 */
-	function searchMovie(ORequest $req): void {
+	public function searchMovie(ORequest $req): void {
 		$status = 'ok';
 		$q      = $req->getParamString('q');
 		$filter = $req->getFilter('loginFilter');
@@ -377,7 +377,7 @@ class api extends OModule {
 	 *
 	 * @return void
 	 */
-	function selectResult(ORequest $req): void {
+	public function selectResult(ORequest $req): void {
 		$status   = 'ok';
 		$id       = $req->getParamInt('id');
 		$filter   = $req->getFilter('loginFilter');
@@ -410,7 +410,7 @@ class api extends OModule {
 	 *
 	 * @return void
 	 */
-	function getMovie(ORequest $req): void {
+	public function getMovie(ORequest $req): void {
 		$status     = 'ok';
 		$id         = $req->getParamInt('id');
 		$filter     = $req->getFilter('loginFilter');
