@@ -1,4 +1,8 @@
 <?php declare(strict_types=1);
+/**
+ * @prefix /api
+ * @type json
+*/
 class api extends OModule {
 	private ?webService $web_service = null;
 
@@ -9,8 +13,8 @@ class api extends OModule {
 	/**
 	 * Función para iniciar sesión en la aplicación
 	 *
+	 * @url /login
 	 * @param ORequest $req Request object with method, headers, parameters and filters used
-	 *
 	 * @return void
 	 */
 	public function login(ORequest $req): void {
@@ -55,8 +59,8 @@ class api extends OModule {
 	/**
 	 * Función para registrarse en la aplicación
 	 *
+	 * @url /register
 	 * @param ORequest $req Request object with method, headers, parameters and filters used
-	 *
 	 * @return void
 	 */
 	public function register(ORequest $req): void {
@@ -99,8 +103,9 @@ class api extends OModule {
 	/**
 	 * Función para obtener la lista de cines
 	 *
+	 * @url /get-cinemas
+	 * @filter loginFilter
 	 * @param ORequest $req Request object with method, headers, parameters and filters used
-	 *
 	 * @return void
 	 */
 	public function getCinemas(ORequest $req): void {
@@ -123,8 +128,9 @@ class api extends OModule {
 	/**
 	 * Función para añadir un nuevo cine
 	 *
+	 * @url /add-cinema
+	 * @filter loginFilter
 	 * @param ORequest $req Request object with method, headers, parameters and filters used
-	 *
 	 * @return void
 	 */
 	public function addCinema(ORequest $req): void {
@@ -151,8 +157,9 @@ class api extends OModule {
 	/**
 	 * Función para borrar un cine
 	 *
+	 * @url /delete-cinema
+	 * @filter loginFilter
 	 * @param ORequest $req Request object with method, headers, parameters and filters used
-	 *
 	 * @return void
 	 */
 	public function deleteCinema(ORequest $req): void {
@@ -185,8 +192,9 @@ class api extends OModule {
 	/**
 	 * Función para editar el nombre de un cine
 	 *
+	 * @url /edit-cinema
+	 * @filter loginFilter
 	 * @param ORequest $req Request object with method, headers, parameters and filters used
-	 *
 	 * @return void
 	 */
 	public function editCinema(ORequest $req): void {
@@ -221,8 +229,9 @@ class api extends OModule {
 	/**
 	 * Función para obtener la lista de las últimas películas
 	 *
+	 * @url /get-movies
+	 * @filter loginFilter
 	 * @param ORequest $req Request object with method, headers, parameters and filters used
-	 *
 	 * @return void
 	 */
 	public function getMovies(ORequest $req): void {
@@ -249,8 +258,9 @@ class api extends OModule {
 	/**
 	 * Función para obtener la lista de las últimas películas de un cine concreto
 	 *
+	 * @url /get-cinema-movies
+	 * @filter loginFilter
 	 * @param ORequest $req Request object with method, headers, parameters and filters used
-	 *
 	 * @return void
 	 */
 	public function getCinemaMovies(ORequest $req): void {
@@ -285,8 +295,9 @@ class api extends OModule {
 	/**
 	 * Función para guardar una nueva entrada
 	 *
+	 * @url /save-movie
+	 * @filter loginFilter
 	 * @param ORequest $req Request object with method, headers, parameters and filters used
-	 *
 	 * @return void
 	 */
 	public function saveMovie(ORequest $req): void {
@@ -338,8 +349,9 @@ class api extends OModule {
 	/**
 	 * Función para buscar películas en The Movie Data Base
 	 *
+	 * @url /search-movie
+	 * @filter loginFilter
 	 * @param ORequest $req Request object with method, headers, parameters and filters used
-	 *
 	 * @return void
 	 */
 	public function searchMovie(ORequest $req): void {
@@ -373,8 +385,9 @@ class api extends OModule {
 	/**
 	 * Función para obtener el detalle de una película en The Movie Data Base
 	 *
+	 * @url /select-result
+	 * @filter loginFilter
 	 * @param ORequest $req Request object with method, headers, parameters and filters used
-	 *
 	 * @return void
 	 */
 	public function selectResult(ORequest $req): void {
@@ -406,8 +419,9 @@ class api extends OModule {
 	/**
 	 * Función para obtener el detalle de una película
 	 *
+	 * @url /get-movie
+	 * @filter loginFilter
 	 * @param ORequest $req Request object with method, headers, parameters and filters used
-	 *
 	 * @return void
 	 */
 	public function getMovie(ORequest $req): void {
