@@ -122,7 +122,7 @@ class api extends OModule {
 		}
 
 		$this->getTemplate()->add('status', $status);
-		$this->getTemplate()->addPartial('list', 'api/cinemas', ['list'=>$list, 'extra'=>'nourlencode']);
+		$this->getTemplate()->addComponent('list', 'api/cinemas', ['list'=>$list, 'extra'=>'nourlencode']);
 	}
 
 	/**
@@ -252,7 +252,7 @@ class api extends OModule {
 
 		$this->getTemplate()->add('status',    $status);
 		$this->getTemplate()->add('num_pages', $num_pages);
-		$this->getTemplate()->addPartial('list', 'api/movies', ['list'=>$list, 'extra'=>'nourlencode']);
+		$this->getTemplate()->addComponent('list', 'api/movies', ['list'=>$list, 'extra'=>'nourlencode']);
 	}
 
 	/**
@@ -289,7 +289,7 @@ class api extends OModule {
 		}
 
 		$this->getTemplate()->add('status', $status);
-		$this->getTemplate()->addPartial('list', 'api/movies', ['list'=>$list, 'extra'=>'nourlencode']);
+		$this->getTemplate()->addComponent('list', 'api/movies', ['list'=>$list, 'extra'=>'nourlencode']);
 	}
 
 	/**
@@ -379,7 +379,7 @@ class api extends OModule {
 		}
 
 		$this->getTemplate()->add('status', $status);
-		$this->getTemplate()->addPartial('list', 'api/tmdbList', ['list'=>$list, 'extra'=>'nourlencode']);
+		$this->getTemplate()->addComponent('list', 'api/tmdbList', ['list'=>$list, 'extra'=>'nourlencode']);
 	}
 
 	/**
