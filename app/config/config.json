@@ -22,5 +22,6 @@
 		"tmdb_api_key": "f54cd33501fddec9a5f6a82d27c61207",
 		"tmdb_poster_url": "http://image.tmdb.org/t/p/w300%s",
 		"imdb_url": "https://www.imdb.com/title/%s/"
-	}
+	},
+	"environment": "prod"
 }

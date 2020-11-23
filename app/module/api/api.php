@@ -122,7 +122,7 @@ class api extends OModule {
 		}
 
 		$this->getTemplate()->add('status', $status);
-		$this->getTemplate()->addComponent('list', 'api/cinemas', ['list'=>$list, 'extra'=>'nourlencode']);
+		$this->getTemplate()->addModelComponentList('list', $list, ['id_user', 'created_at', 'updated_at']);
 	}
 
 	/**
