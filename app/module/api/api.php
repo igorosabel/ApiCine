@@ -1,8 +1,20 @@
 <?php declare(strict_types=1);
-/**
- * @prefix /api
- * @type json
-*/
+
+namespace OsumiFramework\App\Module;
+
+use OsumiFramework\OFW\Core\OModule;
+use OsumiFramework\OFW\Web\ORequest;
+use OsumiFramework\OFW\Routing\ORoute;
+use OsumiFramework\App\Model\User;
+use OsumiFramework\App\Model\Cinema;
+use OsumiFramework\App\Model\Movie;
+use OsumiFramework\App\Service\webService;
+use OsumiFramework\OFW\Plugins\OToken;
+
+#[ORoute(
+	type: 'json',
+	prefix: '/api'
+)]
 class api extends OModule {
 	private ?webService $web_service = null;
 
@@ -13,10 +25,10 @@ class api extends OModule {
 	/**
 	 * Función para iniciar sesión en la aplicación
 	 *
-	 * @url /login
 	 * @param ORequest $req Request object with method, headers, parameters and filters used
 	 * @return void
 	 */
+	#[ORoute('/login')]
 	public function login(ORequest $req): void {
 		$status = 'ok';
 		$name   = $req->getParamString('name');
@@ -38,7 +50,7 @@ class api extends OModule {
 					$tk = new OToken($this->getConfig()->getExtra('secret'));
 					$tk->addParam('id',   $id);
 					$tk->addParam('name', $name);
-					$tk->addParam('exp', mktime() + (24 * 60 * 60));
+					$tk->addParam('exp', time() + (24 * 60 * 60));
 					$token = $tk->getToken();
 				}
 				else {
@@ -59,10 +71,10 @@ class api extends OModule {
 	/**
 	 * Función para registrarse en la aplicación
 	 *
-	 * @url /register
 	 * @param ORequest $req Request object with method, headers, parameters and filters used
 	 * @return void
 	 */
+	#[ORoute('/register')]
 	public function register(ORequest $req): void {
 		$status = 'ok';
 		$name   = $req->getParamString('name');
@@ -89,7 +101,7 @@ class api extends OModule {
 				$tk = new OToken($this->getConfig()->getExtra('secret'));
 				$tk->addParam('id',   $id);
 				$tk->addParam('name', $name);
-				$tk->addParam('exp', mktime() + (24 * 60 * 60));
+				$tk->addParam('exp', time() + (24 * 60 * 60));
 				$token = $tk->getToken();
 			}
 		}
@@ -103,11 +115,13 @@ class api extends OModule {
 	/**
 	 * Función para obtener la lista de cines
 	 *
-	 * @url /get-cinemas
-	 * @filter loginFilter
 	 * @param ORequest $req Request object with method, headers, parameters and filters used
 	 * @return void
 	 */
+	#[ORoute(
+		'/get-cinemas',
+		filter: 'loginFilter'
+	)]
 	public function getCinemas(ORequest $req): void {
 		$status = 'ok';
 		$filter = $req->getFilter('loginFilter');
@@ -128,11 +142,13 @@ class api extends OModule {
 	/**
 	 * Función para añadir un nuevo cine
 	 *
-	 * @url /add-cinema
-	 * @filter loginFilter
 	 * @param ORequest $req Request object with method, headers, parameters and filters used
 	 * @return void
 	 */
+	#[ORoute(
+		'/add-cinema',
+		filter: 'loginFilter'
+	)]
 	public function addCinema(ORequest $req): void {
 		$status = 'ok';
 		$name   = $req->getParamString('name');
@@ -157,11 +173,13 @@ class api extends OModule {
 	/**
 	 * Función para borrar un cine
 	 *
-	 * @url /delete-cinema
-	 * @filter loginFilter
 	 * @param ORequest $req Request object with method, headers, parameters and filters used
 	 * @return void
 	 */
+	#[ORoute(
+		'/delete-cinema',
+		filter: 'loginFilter'
+	)]
 	public function deleteCinema(ORequest $req): void {
 		$status = 'ok';
 		$id     = $req->getParamInt('id');
@@ -192,11 +210,13 @@ class api extends OModule {
 	/**
 	 * Función para editar el nombre de un cine
 	 *
-	 * @url /edit-cinema
-	 * @filter loginFilter
 	 * @param ORequest $req Request object with method, headers, parameters and filters used
 	 * @return void
 	 */
+	#[ORoute(
+		'/edit-cinema',
+		filter: 'loginFilter'
+	)]
 	public function editCinema(ORequest $req): void {
 		$status = 'ok';
 		$id     = $req->getParamInt('id');
@@ -229,11 +249,13 @@ class api extends OModule {
 	/**
 	 * Función para obtener la lista de las últimas películas
 	 *
-	 * @url /get-movies
-	 * @filter loginFilter
 	 * @param ORequest $req Request object with method, headers, parameters and filters used
 	 * @return void
 	 */
+	#[ORoute(
+		'/get-movies',
+		filter: 'loginFilter'
+	)]
 	public function getMovies(ORequest $req): void {
 		$status = 'ok';
 		$page   = $req->getParamInt('page');
@@ -258,11 +280,13 @@ class api extends OModule {
 	/**
 	 * Función para obtener la lista de las últimas películas de un cine concreto
 	 *
-	 * @url /get-cinema-movies
-	 * @filter loginFilter
 	 * @param ORequest $req Request object with method, headers, parameters and filters used
 	 * @return void
 	 */
+	#[ORoute(
+		'/get-cinema-movies',
+		filter: 'loginFilter'
+	)]
 	public function getCinemaMovies(ORequest $req): void {
 		$status = 'ok';
 		$id     = $req->getParamInt('id');
@@ -295,11 +319,13 @@ class api extends OModule {
 	/**
 	 * Función para guardar una nueva entrada
 	 *
-	 * @url /save-movie
-	 * @filter loginFilter
 	 * @param ORequest $req Request object with method, headers, parameters and filters used
 	 * @return void
 	 */
+	#[ORoute(
+		'/save-movie',
+		filter: 'loginFilter'
+	)]
 	public function saveMovie(ORequest $req): void {
 		$status       = 'ok';
 		$id_cinema    = $req->getParamInt('idCinema');
@@ -349,11 +375,13 @@ class api extends OModule {
 	/**
 	 * Función para buscar películas en The Movie Data Base
 	 *
-	 * @url /search-movie
-	 * @filter loginFilter
 	 * @param ORequest $req Request object with method, headers, parameters and filters used
 	 * @return void
 	 */
+	#[ORoute(
+		'/search-movie',
+		filter: 'loginFilter'
+	)]
 	public function searchMovie(ORequest $req): void {
 		$status = 'ok';
 		$q      = $req->getParamString('q');
@@ -385,11 +413,13 @@ class api extends OModule {
 	/**
 	 * Función para obtener el detalle de una película en The Movie Data Base
 	 *
-	 * @url /select-result
-	 * @filter loginFilter
 	 * @param ORequest $req Request object with method, headers, parameters and filters used
 	 * @return void
 	 */
+	#[ORoute(
+		'/select-result',
+		filter: 'loginFilter'
+	)]
 	public function selectResult(ORequest $req): void {
 		$status   = 'ok';
 		$id       = $req->getParamInt('id');
@@ -419,11 +449,13 @@ class api extends OModule {
 	/**
 	 * Función para obtener el detalle de una película
 	 *
-	 * @url /get-movie
-	 * @filter loginFilter
 	 * @param ORequest $req Request object with method, headers, parameters and filters used
 	 * @return void
 	 */
+	#[ORoute(
+		'/get-movie',
+		filter: 'loginFilter'
+	)]
 	public function getMovie(ORequest $req): void {
 		$status     = 'ok';
 		$id         = $req->getParamInt('id');

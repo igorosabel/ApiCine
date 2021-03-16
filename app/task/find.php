@@ -1,4 +1,10 @@
 <?php declare(strict_types=1);
+
+namespace OsumiFramework\App\Task;
+
+use OsumiFramework\OFW\Core\OTask;
+use OsumiFramework\App\Service\webService;
+
 class findTask extends OTask {
 	public function __toString() {
 		return "find: Función para buscar películas en The Movie Database";

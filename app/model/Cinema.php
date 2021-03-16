@@ -1,4 +1,9 @@
 <?php declare(strict_types=1);
+
+namespace OsumiFramework\App\Model;
+
+use OsumiFramework\OFW\DB\OModel;
+
 class Cinema extends OModel {
 	/**
 	 * Configures current model object based on data-base table structure
@@ -7,33 +12,33 @@ class Cinema extends OModel {
 		$table_name = 'cinema';
 		$model = [
 			'id' => [
-				'type'    => OCore::PK,
+				'type'    => OModel::PK,
 				'comment' => 'Id único para cada cine'
 			],
 			'id_user' => [
-				'type'     => OCore::NUM,
+				'type'     => OModel::NUM,
 				'comment'  => 'Id del usuario que añade el cine',
 				'nullable' => false,
 				'ref'      => 'user.id'
 			],
 			'name' => [
-				'type'     => OCore::TEXT,
+				'type'     => OModel::TEXT,
 				'size'     => 50,
 				'comment'  => 'Nombre del cine',
 				'nullable' => false
 			],
 			'slug' => [
-				'type'     => OCore::TEXT,
+				'type'     => OModel::TEXT,
 				'size'     => 50,
 				'comment'  => 'Slug del nombre del cine',
 				'nullable' => false
 			],
 			'created_at' => [
-				'type'    => OCore::CREATED,
+				'type'    => OModel::CREATED,
 				'comment' => 'Fecha de creación del registro'
 			],
 			'updated_at' => [
-				'type'    => OCore::UPDATED,
+				'type'    => OModel::UPDATED,
 				'comment' => 'Fecha de última modificación del registro'
 			]
 		];
