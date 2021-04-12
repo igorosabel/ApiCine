@@ -1,4 +1,5 @@
 {
+	"name": "Cine",
 	"admin_email": "inigo.gorosabel@gmail.com",
 	"default_title": "Cine",
 	"db": {
