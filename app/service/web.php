@@ -4,6 +4,7 @@ namespace OsumiFramework\App\Service;
 
 use OsumiFramework\OFW\Core\OService;
 use OsumiFramework\OFW\DB\ODB;
+use OsumiFramework\OFW\Tools\OTools;
 use OsumiFramework\App\Model\Cinema;
 use OsumiFramework\App\Model\Movie;
 
@@ -43,6 +44,8 @@ class webService extends OService {
 	 *
 	 * @param int $id_user Id del usuario
 	 *
+	 * @param int $page Página de resultados a buscar
+	 *
 	 * @return array Lista de películas del usuario
 	 */
  	public function getMovies(int $id_user, int $page): array {
@@ -76,6 +79,53 @@ class webService extends OService {
 		$c  = $this->getConfig();
 
 		$sql = "SELECT COUNT(*) AS `num` FROM `movie` WHERE `id_user` = ?";
+		$db->query($sql, [$id_user]);
+		$res = $db->next();
+
+		return intval( ceil( (int)$res['num'] / $c->getExtra('num_por_pag')) );
+	}
+
+	/**
+	 * Obtiene la lista de películas de un usuario, buscando por título
+	 *
+	 * @param int $id_user Id del usuario
+	 *
+	 * @param string $q Cadena de texto a buscar
+	 *
+	 * @return array Lista de películas del usuario
+	 */
+ 	public function getMoviesByTitle(int $id_user, string $q): array {
+		$db = new ODB();
+		$c  = $this->getConfig();
+
+		$sql = "SELECT * FROM `movie` WHERE `id_user` = ? AND `slug` LIKE '%".OTools::slugify($q)."%' ORDER BY `movie_date` DESC";
+		$db->query($sql, [$id_user]);
+		$ret = [];
+
+		while ($res = $db->next()) {
+			$movie = new Movie();
+			$movie->update($res);
+
+			array_push($ret, $movie);
+		}
+
+		return $ret;
+	}
+
+	/**
+	 * Obtiene el número de páginas de resultados de las películas de un usuario
+	 *
+	 * @param int $id_user Id del usuario
+	 *
+	 * @param string $q Cadena de texto a buscar
+	 *
+	 * @return int Número de páginas de resultados
+	 */
+	public function getMoviesPagesByTitle(int $id_user, string $q): int {
+		$db = new ODB();
+		$c  = $this->getConfig();
+
+		$sql = "SELECT COUNT(*) AS `num` FROM `movie` WHERE `id_user` = ? AND `slug` LIKE '%".OTools::slugify($q)."%'";
 		$db->query($sql, [$id_user]);
 		$res = $db->next();
 

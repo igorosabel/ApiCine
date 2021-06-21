@@ -260,7 +260,7 @@ class api extends OModule {
 		$status = 'ok';
 		$page   = $req->getParamInt('page');
 		$filter = $req->getFilter('loginFilter');
-		
+
 		if (is_null($page) || is_null($filter) || !array_key_exists('id', $filter)) {
 			$status = 'error';
 		}
@@ -503,5 +503,36 @@ class api extends OModule {
 		$this->getTemplate()->add('ticket',     $ticket);
 		$this->getTemplate()->add('imdb_url',   $imdb_url);
 		$this->getTemplate()->add('movie_date', $movie_date);
+	}
+
+	/**
+	 * Función para buscar películas entre las que el usuario ha visto
+	 *
+	 * @param ORequest $req Request object with method, headers, parameters and filters used
+	 * @return void
+	 */
+	#[ORoute(
+		'/search-titles',
+		filter: 'loginFilter'
+	)]
+	public function searchTitles(ORequest $req): void {
+		$status = 'ok';
+		$q      = $req->getParamString('q');
+		$filter = $req->getFilter('loginFilter');
+		$list   = [];
+		$num_pages = 0;
+
+		if (is_null($q) || is_null($filter) || !array_key_exists('id', $filter)) {
+			$status = 'error';
+		}
+
+		if ($status=='ok') {
+			$list      = $this->web_service->getMoviesByTitle($filter['id'], $q);
+			$num_pages = $this->web_service->getMoviesPagesByTitle($filter['id'], $q);
+		}
+
+		$this->getTemplate()->add('status',    $status);
+		$this->getTemplate()->add('num_pages', $num_pages);
+		$this->getTemplate()->addComponent('list', 'api/movies', ['list'=>$list, 'extra'=>'nourlencode']);
 	}
 }
