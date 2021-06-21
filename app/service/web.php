@@ -277,9 +277,10 @@ class webService extends OService {
 	 * @return void
 	 */
 	public function saveTicket(string $base64_string, int $id, string $ext): void {
-		$c = $this->getConfig();
-		$route = $c->getDir('web').'ticket/'.$id.'.'.$ext;
-		$this->saveImage($route, $base64_string);
+		$route_orig = $this->getConfig()->getDir('web').'ticket/'.$id.'.'.$ext;
+		$route_webp = $this->getConfig()->getDir('web').'ticket/'.$id.'.webp';
+		$this->saveImage($route_orig, $base64_string);
+		$this->saveImageWebp($route_orig, $route_webp);
 	}
 
 	/**
@@ -295,8 +296,35 @@ class webService extends OService {
 	 */
 	public function saveCover(string $base64_string, int $id, string $ext): void {
 		$c = $this->getConfig();
-		$route = $c->getDir('web').'cover/'.$id.'.'.$ext;
-		$this->saveImage($route, $base64_string);
+		$route_orig = $this->getConfig()->getDir('web').'cover/'.$id.'.'.$ext;
+		$route_webp = $this->getConfig()->getDir('web').'cover/'.$id.'.webp';
+		$this->saveImage($route_orig, $base64_string);
+		$this->saveImageWebp($route_orig, $route_webp);
+	}
+
+	/**
+	 * Guarda una carátula como archivo
+	 *
+	 * @param string $image Contenido de la imagen
+	 *
+	 * @param int $id Id de la imagen en la base de datos
+	 *
+	 * @param string $ext Extensión del archivo de imagen a guardar
+	 *
+	 * @return void
+	 */
+	public function saveCoverImage(string $image, int $id, string $ext): void {
+		$route_orig = $this->getConfig()->getDir('web').'cover/'.$id.'.'.$ext;
+		$route_webp = $this->getConfig()->getDir('web').'cover/'.$id.'.webp';
+		if (file_exists($route_orig)){
+			unlink($route_orig);
+		}
+
+		$ifp = fopen($route_orig, 'wb');
+		fwrite($ifp, $image);
+		fclose($ifp);
+
+		$this->saveImageWebp($route_orig, $route_webp);
 	}
 
 	/**
@@ -320,25 +348,28 @@ class webService extends OService {
 	}
 
 	/**
-	 * Guarda una carátula como archivo
+	 * Guarda una imagen previa, temporal, como la definitiva en formato Webp
 	 *
-	 * @param string $image Contenido de la imagen
+	 * @param string $route_orig Ruta al archivo temporal original
 	 *
-	 * @param int $id Id de la imagen en la base de datos
-	 *
-	 * @param string $ext Extensión del archivo de imagen a guardar
+	 * @param string $route_webp Ruta definitiva al archivo webp
 	 *
 	 * @return void
 	 */
-	public function saveCoverImage(string $image, int $id, string $ext): void {
-		$c = $this->getConfig();
-		$route = $c->getDir('web').'cover/'.$id.'.'.$ext;
-		if (file_exists($route)){
-			unlink($route);
+	public function saveImageWebp(string $route_orig, string $route_webp): void {
+		$im = new OImage();
+		$im->load($route_orig);
+
+		// Compruebo tamaño inicial
+		if ($im->getWidth() > 1000) {
+			$im->resizeToWidth(1000);
+			$im->save($route_orig, $im->getImageType());
 		}
 
-		$ifp = fopen($route, 'wb');
-		fwrite($ifp, $image);
-		fclose($ifp);
+		// Guardo la imagen ya modificada como WebP
+		$im->save($route_webp, IMAGETYPE_WEBP);
+
+		// Borro la imagen temporal
+		unlink($route_orig);
 	}
 }

@@ -349,23 +349,24 @@ class api extends OModule {
 			$movie->set('slug',       OTools::slugify($name));
 			$movie->set('imdb_url',   $imdb_url);
 			$movie->set('movie_date', $this->web_service->getParsedDate($date));
-
-			if ($cover_status==2) {
-				$movie->set('cover_ext', array_pop(explode('.', $cover)));
-			}
-			else {
-				$movie->set('cover_ext', $this->web_service->getImageExt($cover));
-			}
-			$movie->set('ext', $this->web_service->getImageExt($ticket));
 			$movie->save();
 
-			$this->web_service->saveTicket($ticket, $movie->get('id'), $movie->get('ext'));
+			$cover_ext = null;
 			if ($cover_status==2) {
-				$tmdb_cover = file_get_contents($cover);
-				$this->web_service->saveCoverImage($tmdb_cover, $movie->get('id'), $movie->get('cover_ext'));
+				$cover_ext = array_pop(explode('.', $cover));
 			}
 			else {
-				$this->web_service->saveCover($cover, $movie->get('id'), $movie->get('cover_ext'));
+				$cover_ext = $this->web_service->getImageExt($cover);
+			}
+			$ticket_ext = $this->web_service->getImageExt($ticket);
+
+			$this->web_service->saveTicket($ticket, $movie->get('id'), $ticket_ext);
+			if ($cover_status==2) {
+				$tmdb_cover = file_get_contents($cover);
+				$this->web_service->saveCoverImage($tmdb_cover, $movie->get('id'), $cover_ext);
+			}
+			else {
+				$this->web_service->saveCover($cover, $movie->get('id'), $cover_ext);
 			}
 		}
 

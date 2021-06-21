@@ -39,22 +39,10 @@ class Movie extends OModel {
 				'comment'  => 'Slug del nombre de la película',
 				'nullable' => false
 			],
-			'ext' => [
-				'type'     => OModel::TEXT,
-				'size'     => 5,
-				'comment'  => 'Extensión del archivo de la entrada',
-				'nullable' => false
-			],
 			'imdb_url' => [
 				'type'     => OModel::TEXT,
 				'size'     => 200,
 				'comment'  => 'Url de la película en IMDB',
-				'nullable' => false
-			],
-			'cover_ext' => [
-				'type'     => OModel::TEXT,
-				'size'     => 5,
-				'comment'  => 'Extensión del archivo de la carátula',
 				'nullable' => false
 			],
 			'movie_date' => [
@@ -89,7 +77,7 @@ class Movie extends OModel {
 	 */
 	public function getCoverUrl(): string {
 		global $core;
-		return $core->config->getUrl('base').'cover/'.$this->get('id').'.'.$this->get('cover_ext');
+		return $core->config->getUrl('base').'cover/'.$this->get('id').'.webp';
 	}
 
 	/**
@@ -99,7 +87,7 @@ class Movie extends OModel {
 	 */
 	public function getTicketUrl(): string {
 		global $core;
-		return $core->config->getUrl('base').'ticket/'.$this->get('id').'.'.$this->get('ext');
+		return $core->config->getUrl('base').'ticket/'.$this->get('id').'.webp';
 	}
 
 	/**
@@ -109,8 +97,8 @@ class Movie extends OModel {
 	 */
 	public function deleteFull(): void{
 		global $core;
-		$cover_route  = $core->config->getDir('web').'cover/'.$this->get('id').'.'.$this->get('cover_ext');
-		$ticket_route = $core->config->getDir('web').'ticket/'.$this->get('id').'.'.$this->get('ext');
+		$cover_route  = $core->config->getDir('web').'cover/'.$this->get('id').'.webp';
+		$ticket_route = $core->config->getDir('web').'ticket/'.$this->get('id').'.webp';
 
 		if (file_exists($cover_route)) {
 			unlink($cover_route);
