@@ -7,6 +7,7 @@ use OsumiFramework\OFW\DB\ODB;
 use OsumiFramework\OFW\Tools\OTools;
 use OsumiFramework\App\Model\Cinema;
 use OsumiFramework\App\Model\Movie;
+use OsumiFramework\OFW\Plugins\OImage;
 
 class webService extends OService {
 	/**

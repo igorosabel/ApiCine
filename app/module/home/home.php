@@ -5,6 +5,7 @@ namespace OsumiFramework\App\Module;
 use OsumiFramework\OFW\Core\OModule;
 use OsumiFramework\OFW\Web\ORequest;
 use OsumiFramework\OFW\Routing\ORoute;
+use OsumiFramework\OFW\Routing\OUrl;
 
 class home extends OModule {
 	/**

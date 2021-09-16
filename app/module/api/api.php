@@ -5,6 +5,7 @@ namespace OsumiFramework\App\Module;
 use OsumiFramework\OFW\Core\OModule;
 use OsumiFramework\OFW\Web\ORequest;
 use OsumiFramework\OFW\Routing\ORoute;
+use OsumiFramework\OFW\Tools\OTools;
 use OsumiFramework\App\Model\User;
 use OsumiFramework\App\Model\Cinema;
 use OsumiFramework\App\Model\Movie;
