@@ -11,6 +11,8 @@ use OsumiFramework\App\Model\Cinema;
 use OsumiFramework\App\Model\Movie;
 use OsumiFramework\App\Service\webService;
 use OsumiFramework\OFW\Plugins\OToken;
+use OsumiFramework\App\DTO\UserDTO;
+use OsumiFramework\App\DTO\MovieDTO;
 
 #[ORoute(
 	type: 'json',
@@ -26,31 +28,28 @@ class api extends OModule {
 	/**
 	 * Función para iniciar sesión en la aplicación
 	 *
-	 * @param ORequest $req Request object with method, headers, parameters and filters used
+	 * @param UserDTO $data Nombre y contraseña del usuario
 	 * @return void
 	 */
 	#[ORoute('/login')]
-	public function login(ORequest $req): void {
+	public function login(UserDTO $data): void {
 		$status = 'ok';
-		$name   = $req->getParamString('name');
-		$pass   = $req->getParamString('pass');
-
 		$id    = 'null';
 		$token = '';
 
-		if (is_null($name) || is_null($pass)) {
+		if (!$data->isValid()) {
 			$status = 'error';
 		}
 
 		if ($status=='ok') {
 			$u = new User();
-			if ($u->find(['name'=>$name])) {
-				if (password_verify($pass, $u->get('pass'))) {
+			if ($u->find(['name'=>$data->getName()])) {
+				if (password_verify($data->getPass(), $u->get('pass'))) {
 					$id = $u->get('id');
 
 					$tk = new OToken($this->getConfig()->getExtra('secret'));
 					$tk->addParam('id',   $id);
-					$tk->addParam('name', $name);
+					$tk->addParam('name', $data->getName());
 					$tk->addParam('exp', time() + (24 * 60 * 60));
 					$token = $tk->getToken();
 				}
@@ -65,43 +64,41 @@ class api extends OModule {
 
 		$this->getTemplate()->add('status', $status);
 		$this->getTemplate()->add('id',     $id);
-		$this->getTemplate()->add('name',   $name);
+		$this->getTemplate()->add('name',   $data->getName());
 		$this->getTemplate()->add('token',  $token);
 	}
 
 	/**
 	 * Función para registrarse en la aplicación
 	 *
-	 * @param ORequest $req Request object with method, headers, parameters and filters used
+	 * @param UserDTO $data Nombre y contraseña del usuario
 	 * @return void
 	 */
 	#[ORoute('/register')]
-	public function register(ORequest $req): void {
+	public function register(UserDTO $data): void {
 		$status = 'ok';
-		$name   = $req->getParamString('name');
-		$pass   = $req->getParamString('pass');
-		$id     = 'null';
-		$token  = '';
+		$id    = 'null';
+		$token = '';
 
-		if (is_null($name) || is_null($pass)) {
+		if (!$data->isValid()) {
 			$status = 'error';
 		}
 
 		if ($status=='ok') {
 			$u = new User();
-			if ($u->find(['name'=>$name])) {
+			if ($u->find(['name'=>$data->getName()])) {
 				$status = 'error-user';
 			}
 			else {
-				$u->set('name', $name);
-				$u->set('pass', password_hash($pass, PASSWORD_BCRYPT));
+				$u->set('name', $data->getName());
+				$u->set('pass', password_hash($data->getPass(), PASSWORD_BCRYPT));
 				$u->save();
 
 				$id = $u->get('id');
 
 				$tk = new OToken($this->getConfig()->getExtra('secret'));
 				$tk->addParam('id',   $id);
-				$tk->addParam('name', $name);
+				$tk->addParam('name', $data->getName());
 				$tk->addParam('exp', time() + (24 * 60 * 60));
 				$token = $tk->getToken();
 			}
@@ -109,7 +106,7 @@ class api extends OModule {
 
 		$this->getTemplate()->add('status', $status);
 		$this->getTemplate()->add('id',     $id);
-		$this->getTemplate()->add('name',   $name);
+		$this->getTemplate()->add('name',   $data->getName());
 		$this->getTemplate()->add('token',  $token);
 	}
 
@@ -320,25 +317,26 @@ class api extends OModule {
 	/**
 	 * Función para guardar una nueva entrada
 	 *
-	 * @param ORequest $req Request object with method, headers, parameters and filters used
+	 * @param MovieDTO $data DTO con los datos de la película a guardar
 	 * @return void
 	 */
 	#[ORoute(
 		'/save-movie',
 		filter: 'loginFilter'
 	)]
-	public function saveMovie(ORequest $req): void {
-		$status       = 'ok';
-		$id_cinema    = $req->getParamInt('idCinema');
-		$name         = $req->getParamString('name');
-		$cover        = $req->getParam('cover',       false);
-		$cover_status = $req->getParam('coverStatus', false);
-		$ticket       = $req->getParam('ticket',      false);
-		$imdb_url     = $req->getParamString('imdbUrl');
-		$date         = $req->getParamString('date');
-		$filter       = $req->getFilter('loginFilter');
-
-		if (is_null($id_cinema) || is_null($name) || $cover===false || $cover_status===false || $ticket===false || is_null($imdb_url) || is_null($date) || is_null($filter) || !array_key_exists('id', $filter)) {
+	public function saveMovie(MovieDTO $data): void {
+		$status = 'ok';
+		if ($data->isValid()) {
+			$id_cinema    = $data->getIdCinema();
+			$name         = $data->getName();
+			$cover        = $data->getCover();
+			$cover_status = $data->getCoverStatus();
+			$ticket       = $data->getTicket();
+			$imdb_url     = $data->getImdbUrl();
+			$date         = $data->getDate();
+			$filter       = $data->getFilter();
+		}
+		else {
 			$status = 'error';
 		}
 
