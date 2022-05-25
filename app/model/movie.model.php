@@ -9,7 +9,6 @@ class Movie extends OModel {
 	 * Configures current model object based on data-base table structure
 	 */
 	function __construct() {
-		$table_name = 'movie';
 		$model = [
 			'id' => [
 				'type'    => OModel::PK,
@@ -60,7 +59,7 @@ class Movie extends OModel {
 			]
 		];
 
-		parent::load($table_name, $model);
+		parent::load($model);
 	}
 
 	/**

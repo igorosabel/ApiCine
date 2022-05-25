@@ -89,6 +89,6 @@ class MovieDTO implements ODTO{
 		$this->setTicket($req->getParam('ticket'));
 		$this->setImdbUrl($req->getParamString('imdbUrl'));
 		$this->setDate($req->getParamString('date'));
-		$this->setFilter($req->getFilter('loginFilter'));
+		$this->setFilter($req->getFilter('login'));
 	}
 }
