@@ -9,7 +9,7 @@ use OsumiFramework\OFW\Web\ORequest;
 #[OModuleAction(
 	url: '/select-result',
 	filter: 'login',
-	services: 'web'
+	services: ['web']
 )]
 class selectResultAction extends OAction {
 	/**

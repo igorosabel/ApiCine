@@ -10,8 +10,8 @@ use OsumiFramework\App\Component\MoviesComponent;
 #[OModuleAction(
 	url: '/search-titles',
 	filter: 'login',
-	services: 'web',
-	components: 'api/movies'
+	services: ['web'],
+	components: ['api/movies']
 )]
 class searchTitlesAction extends OAction {
 	/**
@@ -25,7 +25,7 @@ class searchTitlesAction extends OAction {
 		$q      = $req->getParamString('q');
 		$filter = $req->getFilter('login');
 		$num_pages = 0;
-		$movies_component = new MoviesComponent(['list'=>[], 'extra'=>'nourlencode']);
+		$movies_component = new MoviesComponent(['list' => []]);
 
 		if (is_null($q) || is_null($filter) || !array_key_exists('id', $filter)) {
 			$status = 'error';
@@ -35,7 +35,7 @@ class searchTitlesAction extends OAction {
 			$list      = $this->web_service->getMoviesByTitle($filter['id'], $q);
 			$num_pages = $this->web_service->getMoviesPagesByTitle($filter['id'], $q);
 
-			$movies_component = new MoviesComponent(['list'=>$list, 'extra'=>'nourlencode']);
+			$movies_component->setValue('list', $list);
 		}
 
 		$this->getTemplate()->add('status',    $status);

@@ -11,8 +11,8 @@ use OsumiFramework\App\Component\MoviesComponent;
 #[OModuleAction(
 	url: '/get-cinema-movies',
 	filter: 'login',
-	services: 'web',
-	components: 'api/movies'
+	services: ['web'],
+	components: ['api/movies']
 )]
 class getCinemaMoviesAction extends OAction {
 	/**
@@ -25,7 +25,7 @@ class getCinemaMoviesAction extends OAction {
 		$status = 'ok';
 		$id     = $req->getParamInt('id');
 		$filter = $req->getFilter('login');
-		$movies_component = new MoviesComponent(['list'=>[], 'extra'=>'nourlencode']);
+		$movies_component = new MoviesComponent(['list' => []]);
 
 		if (is_null($id) || is_null($filter) || !array_key_exists('id', $filter)) {
 			$status = 'error';
@@ -36,7 +36,7 @@ class getCinemaMoviesAction extends OAction {
 			if ($cinema->find(['id'=>$id])) {
 				if ($cinema->get('id_user')==$filter['id']) {
 					$list = $cinema->getMovies();
-					$movies_component = new MoviesComponent(['list'=>$list, 'extra'=>'nourlencode']);
+					$movies_component->setValue('list', $list);
 				}
 				else {
 					$status = 'error';

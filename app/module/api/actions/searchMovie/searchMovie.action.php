@@ -10,8 +10,8 @@ use OsumiFramework\App\Component\TmdbListComponent;
 #[OModuleAction(
 	url: '/search-movie',
 	filter: 'login',
-	services: 'web',
-	components: 'api/tmdbList'
+	services: ['web'],
+	components: ['api/tmdbList']
 )]
 class searchMovieAction extends OAction {
 	/**
@@ -24,7 +24,7 @@ class searchMovieAction extends OAction {
 		$status = 'ok';
 		$q      = $req->getParamString('q');
 		$filter = $req->getFilter('login');
-		$tmdb_list_component = new TmdbListComponent(['list'=>[], 'extra'=>'nourlencode']);
+		$tmdb_list_component = new TmdbListComponent(['list' => []]);
 
 		if (is_null($q) || is_null($filter) || !array_key_exists('id', $filter)) {
 			$status = 'error';
@@ -42,7 +42,7 @@ class searchMovieAction extends OAction {
 				https://www.imdb.com/title/XXXXX/
 			*/
 			$list = $this->web_service->tmdbList($q);
-			$tmdb_list_component = new TmdbListComponent(['list'=>$list, 'extra'=>'nourlencode']);
+			$tmdb_list_component->setValue('list', $list);
 		}
 
 		$this->getTemplate()->add('status', $status);

@@ -11,7 +11,7 @@ use OsumiFramework\App\Model\Movie;
 #[OModuleAction(
 	url: '/save-movie',
 	filter: 'login',
-	services: 'web'
+	services: ['web']
 )]
 class saveMovieAction extends OAction {
 	/**

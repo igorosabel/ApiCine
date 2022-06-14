@@ -10,8 +10,8 @@ use OsumiFramework\App\Component\CinemasComponent;
 #[OModuleAction(
 	url: '/get-cinemas',
 	filter: 'login',
-	services: 'web',
-	components: 'api/cinemas'
+	services: ['web'],
+	components: ['api/cinemas']
 )]
 class getCinemasAction extends OAction {
 	/**
@@ -23,7 +23,7 @@ class getCinemasAction extends OAction {
 	public function run(ORequest $req):void {
 		$status = 'ok';
 		$filter = $req->getFilter('login');
-		$cinemas_component = new CinemasComponent(['list'=>[], 'extra'=>'nourlencode']);
+		$cinemas_component = new CinemasComponent(['list' => []]);
 
 		if (is_null($filter) || !array_key_exists('id', $filter)) {
 			$status = 'error';
@@ -32,7 +32,7 @@ class getCinemasAction extends OAction {
 
 		if ($status=='ok') {
 			$list = $this->web_service->getCinemas($filter['id']);
-			$cinemas_component = new CinemasComponent(['list'=>$list, 'extra'=>'nourlencode']);
+			$cinemas_component->setValue('list', $list);
 		}
 
 		$this->getTemplate()->add('status', $status);

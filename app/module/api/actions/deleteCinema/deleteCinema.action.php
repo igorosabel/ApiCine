@@ -10,7 +10,7 @@ use OsumiFramework\App\Model\Cinema;
 #[OModuleAction(
 	url: '/delete-cinema',
 	filter: 'login',
-	services: 'web'
+	services: ['web']
 )]
 class deleteCinemaAction extends OAction {
 	/**
