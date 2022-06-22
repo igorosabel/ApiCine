@@ -5,6 +5,6 @@ namespace OsumiFramework\App\Module;
 use OsumiFramework\OFW\Routing\OModule;
 
 #[OModule(
-	actions: 'closed, index, notFound'
+	actions: ['closed', 'index', 'notFound']
 )]
 class homeModule {}
