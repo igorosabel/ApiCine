@@ -10,7 +10,7 @@ use OsumiFramework\App\Component\MoviesComponent;
 
 #[OModuleAction(
 	url: '/get-cinema-movies',
-	filter: 'login',
+	filters: ['login'],
 	services: ['web'],
 	components: ['api/movies']
 )]

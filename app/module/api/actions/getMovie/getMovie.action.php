@@ -9,7 +9,7 @@ use OsumiFramework\App\Model\Movie;
 
 #[OModuleAction(
 	url: '/get-movie',
-	filter: 'login'
+	filters: ['login']
 )]
 class getMovieAction extends OAction {
 	/**

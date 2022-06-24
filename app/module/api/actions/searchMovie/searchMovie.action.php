@@ -9,7 +9,7 @@ use OsumiFramework\App\Component\TmdbListComponent;
 
 #[OModuleAction(
 	url: '/search-movie',
-	filter: 'login',
+	filters: ['login'],
 	services: ['web'],
 	components: ['api/tmdbList']
 )]

@@ -9,7 +9,7 @@ use OsumiFramework\App\Component\CinemasComponent;
 
 #[OModuleAction(
 	url: '/get-cinemas',
-	filter: 'login',
+	filters: ['login'],
 	services: ['web'],
 	components: ['api/cinemas']
 )]

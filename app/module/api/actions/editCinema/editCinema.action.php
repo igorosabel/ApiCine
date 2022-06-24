@@ -9,7 +9,7 @@ use OsumiFramework\App\Model\Cinema;
 
 #[OModuleAction(
 	url: '/edit-cinema',
-	filter: 'login'
+	filters: ['login']
 )]
 class editCinemaAction extends OAction {
 	/**
