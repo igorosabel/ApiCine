@@ -6,13 +6,12 @@ use OsumiFramework\OFW\Routing\OModuleAction;
 use OsumiFramework\OFW\Routing\OAction;
 use OsumiFramework\OFW\Web\ORequest;
 use OsumiFramework\App\Model\Cinema;
-use OsumiFramework\App\Component\MoviesComponent;
+use OsumiFramework\App\Component\Api\MoviesComponent;
 
 #[OModuleAction(
 	url: '/get-cinema-movies',
 	filters: ['login'],
-	services: ['web'],
-	components: ['api/movies']
+	services: ['web']
 )]
 class getCinemaMoviesAction extends OAction {
 	/**
