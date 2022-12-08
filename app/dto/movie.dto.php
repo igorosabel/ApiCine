@@ -83,12 +83,12 @@ class MovieDTO implements ODTO{
 
 	public function load(ORequest $req): void {
 		$this->setIdCinema($req->getParamInt('idCinema'));
-		$this->setName($req->getParamString('name'));
-		$this->setCover($req->getParamString('cover'));
+		$this->setName(urldecode($req->getParamString('name')));
+		$this->setCover(urldecode($req->getParamString('cover')));
 		$this->setCoverStatus($req->getParamInt('coverStatus'));
-		$this->setTicket($req->getParam('ticket'));
-		$this->setImdbUrl($req->getParamString('imdbUrl'));
-		$this->setDate($req->getParamString('date'));
+		$this->setTicket(urldecode($req->getParam('ticket')));
+		$this->setImdbUrl(urldecode($req->getParamString('imdbUrl')));
+		$this->setDate(urldecode($req->getParamString('date')));
 		$this->setFilter($req->getFilter('login'));
 	}
 }
