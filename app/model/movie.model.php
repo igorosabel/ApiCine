@@ -3,61 +3,72 @@
 namespace OsumiFramework\App\Model;
 
 use OsumiFramework\OFW\DB\OModel;
+use OsumiFramework\OFW\DB\OModelGroup;
+use OsumiFramework\OFW\DB\OModelField;
 
 class Movie extends OModel {
 	/**
 	 * Configures current model object based on data-base table structure
 	 */
 	function __construct() {
-		$model = [
-			'id' => [
-				'type'    => OModel::PK,
-				'comment' => 'Id único de cada película'
-			],
-			'id_user' => [
-				'type'     => OModel::NUM,
-				'comment'  => 'Id del usuario que añade la película',
-				'nullable' => false,
-				'ref'      => 'user.id'
-			],
-			'id_cinema' => [
-				'type'     => OModel::NUM,
-				'comment'  => 'Id del cine en el que un usuario ha visto la película',
-				'nullable' => false,
-				'ref'      => 'cinema.id'
-			],
-			'name' => [
-				'type'     => OModel::TEXT,
-				'size'     => 50,
-				'comment'  => 'Nombre de la película',
-				'nullable' => false
-			],
-			'slug' => [
-				'type'     => OModel::TEXT,
-				'size'     => 50,
-				'comment'  => 'Slug del nombre de la película',
-				'nullable' => false
-			],
-			'imdb_url' => [
-				'type'     => OModel::TEXT,
-				'size'     => 200,
-				'comment'  => 'Url de la película en IMDB',
-				'nullable' => false
-			],
-			'movie_date' => [
-				'type'     => OModel::DATE,
-				'comment'  => 'Fecha en la que un usuario fue a ver la película',
-				'nullable' => false
-			],
-			'created_at' => [
-				'type'    => OModel::CREATED,
-				'comment' => 'Fecha de creación del registro'
-			],
-			'updated_at' => [
-				'type'    => OModel::UPDATED,
-				'comment' => 'Fecha de última modificación del registro'
-			]
-		];
+		$model = new OModelGroup(
+			new OModelField(
+				name: 'id',
+				type: OMODEL_PK,
+				comment: 'Id único de cada película'
+			),
+			new OModelField(
+				name: 'id_user',
+				type: OMODEL_NUM,
+				comment: 'Id del usuario que añade la película',
+				nullable: false,
+				ref: 'user.id'
+			),
+			new OModelField(
+				name: 'id_cinema',
+				type: OMODEL_NUM,
+				comment: 'Id del cine en el que un usuario ha visto la película',
+				nullable: false,
+				ref: 'cinema.id'
+			),
+			new OModelField(
+				name: 'name',
+				type: OMODEL_TEXT,
+				size: 50,
+				comment: 'Nombre de la película',
+				nullable: false
+			),
+			new OModelField(
+				name: 'slug',
+				type: OMODEL_TEXT,
+				size: 50,
+				comment: 'Slug del nombre de la película',
+				nullable: false
+			),
+			new OModelField(
+				name: 'imdb_url',
+				type: OMODEL_TEXT,
+				size: 200,
+				comment: 'Url de la película en IMDB',
+				nullable: false
+			),
+			new OModelField(
+				name: 'movie_date',
+				type: OMODEL_DATE,
+				comment: 'Fecha en la que un usuario fue a ver la película',
+				nullable: false
+			),
+			new OModelField(
+				name: 'created_at',
+				type: OMODEL_CREATED,
+				comment: 'Fecha de creación del registro'
+			),
+			new OModelField(
+				name: 'updated_at',
+				type: OMODEL_UPDATED,
+				comment: 'Fecha de última modificación del registro'
+			)
+		);
 
 		parent::load($model);
 	}

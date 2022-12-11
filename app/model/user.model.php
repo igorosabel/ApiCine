@@ -3,38 +3,45 @@
 namespace OsumiFramework\App\Model;
 
 use OsumiFramework\OFW\DB\OModel;
+use OsumiFramework\OFW\DB\OModelGroup;
+use OsumiFramework\OFW\DB\OModelField;
 
 class User extends OModel{
 	/**
 	 * Configures current model object based on data-base table structure
 	 */
 	 function __construct() {
-		$model = [
-			'id' => [
-				'type'    => OModel::PK,
-				'comment' => 'Id único de cada usuario'
-			],
-			'name' => [
-				'type'     => OModel::TEXT,
-				'size'     => 100,
-				'comment'  => 'Nombre de usuario',
-				'nullable' => false
-			],
-			'pass' => [
-				'type'     => OModel::TEXT,
-				'size'     => 255,
-				'comment'  => 'Contraseña cifrada del usuario',
-				'nullable' => false
-			],
-			'created_at' => [
-				'type'    => OModel::CREATED,
-				'comment' => 'Fecha de creación del registro'
-			],
-			'updated_at' => [
-				'type'    => OModel::UPDATED,
-				'comment' => 'Fecha de última modificación del registro'
-			]
-		];
+		$model = new OModelGroup(
+			new OModelField(
+				name: 'id',
+				type: OMODEL_PK,
+				comment: 'Id único de cada usuario'
+			),
+			new OModelField(
+				name: 'name',
+				type: OMODEL_TEXT,
+				size: 100,
+				comment: 'Nombre de usuario',
+				nullable: false
+			),
+			new OModelField(
+				name: 'pass',
+				type: OMODEL_TEXT,
+				size: 255,
+				comment: 'Contraseña cifrada del usuario',
+				nullable: false
+			),
+			new OModelField(
+				name: 'created_at',
+				type: OMODEL_CREATED,
+				comment: 'Fecha de creación del registro'
+			),
+			new OModelField(
+				name: 'updated_at',
+				type: OMODEL_UPDATED,
+				comment: 'Fecha de última modificación del registro'
+			)
+		);
 
 		parent::load($model);
 	}
