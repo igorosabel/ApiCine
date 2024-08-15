@@ -189,9 +189,33 @@ class OCore {
 		}
 
 		if ($this->config->getAllowCrossOrigin()) {
-			header('Access-Control-Allow-Origin: *');
-			header('Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept, Authorization');
-			header('Access-Control-Allow-Methods: GET, POST');
+			//header('Access-Control-Allow-Origin: *');
+			//header('Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept, Authorization');
+			//header('Access-Control-Allow-Methods: GET, POST');
+
+			/*
+			$allowed_origins = [
+			    'http://localhost:5500',
+			    'http://cine.osumi.es'
+			];
+
+			if (isset($_SERVER['HTTP_ORIGIN']) && in_array($_SERVER['HTTP_ORIGIN'], $allowed_origins)) {
+			    header('Access-Control-Allow-Origin: ' . $_SERVER['HTTP_ORIGIN']);
+			    header('Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept, Authorization');
+			    header('Access-Control-Allow-Methods: GET, POST');
+			    header('Access-Control-Allow-Credentials: true'); // Permitir credenciales
+			} else {
+			    // Manejar el caso en que el origen no está permitido
+			    header('HTTP/1.1 403 Forbidden');
+			    echo 'Origin not allowed';
+			    exit;
+			}
+			*/
+
+			header('Access-Control-Allow-Origin: ' . $_SERVER['HTTP_ORIGIN']);
+	    header('Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept, Authorization');
+	    header('Access-Control-Allow-Methods: GET, POST');
+	    header('Access-Control-Allow-Credentials: true');
 		}
 
 		// Load current URL

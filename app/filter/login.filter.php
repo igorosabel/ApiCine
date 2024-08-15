@@ -16,9 +16,14 @@ use OsumiFramework\OFW\Plugins\OToken;
 function loginFilter(array $params, array $headers): array {
 	global $core;
 	$ret = ['status'=>'error', 'id'=>null];
-
 	$tk = new OToken($core->config->getExtra('secret'));
-	if ($tk->checkToken($headers['Authorization'])) {
+
+	$token = $_COOKIE['auth_token'] ?? null;
+
+	var_dump($_COOKIE);
+	exit;
+
+	if ($token && $tk->checkToken($token)) {
 		$ret['status'] = 'ok';
 		$ret['id'] = intval($tk->getParam('id'));
 	}

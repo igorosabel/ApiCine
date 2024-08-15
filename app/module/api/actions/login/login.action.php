@@ -38,6 +38,22 @@ class loginAction extends OAction {
 					$tk->addParam('name', $data->getName());
 					$tk->addParam('exp', time() + (24 * 60 * 60));
 					$token = $tk->getToken();
+
+					$cookie_options = [
+					    'expires' => time() + (24 * 60 * 60),
+					    'path' => '/',
+					    'domain' => '.osumi.es',
+					    'secure' => true,
+					    'httponly' => true,
+					    'samesite' => 'Strict'
+					];
+
+					if (setcookie('auth_token', $token, $cookie_options)) {
+						//echo "COOKIE IS SET\n";
+					}
+					else {
+						echo "COOKIE NOT SET\n";
+					}
 				}
 				else {
 					$status = 'error';
@@ -51,6 +67,5 @@ class loginAction extends OAction {
 		$this->getTemplate()->add('status', $status);
 		$this->getTemplate()->add('id',     $id);
 		$this->getTemplate()->add('name',   $data->getName());
-		$this->getTemplate()->add('token',  $token);
 	}
 }
