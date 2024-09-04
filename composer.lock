@@ -1,0 +1,139 @@
+{
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
+        "This file is @generated automatically"
+    ],
+    "content-hash": "89db4148ffbada59b965be89015d6194",
+    "packages": [
+        {
+            "name": "osumionline/framework",
+            "version": "9.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/osumionline/framework.git",
+                "reference": "0cc75e04a4320aa1c5dd2cfe671b12fd8bf6198a"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/osumionline/framework/zipball/0cc75e04a4320aa1c5dd2cfe671b12fd8bf6198a",
+                "reference": "0cc75e04a4320aa1c5dd2cfe671b12fd8bf6198a",
+                "shasum": ""
+            },
+            "require": {
+                "ext-json": "*",
+                "php": ">=8.2"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Osumi\\OsumiFramework\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Iñigo Gorosabel",
+                    "homepage": "https://osumi.es",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Framework PHP de Osumi para aplicaciones web.",
+            "homepage": "https://github.com/osumionline/framework",
+            "keywords": [
+                "framework",
+                "osumi",
+                "php",
+                "web"
+            ],
+            "support": {
+                "issues": "https://github.com/osumionline/framework/issues",
+                "source": "https://github.com/osumionline/framework/tree/v9.0.0"
+            },
+            "time": "2024-09-02T10:01:32+00:00"
+        },
+        {
+            "name": "osumionline/plugin-image",
+            "version": "3.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/osumionline/plugin-image.git",
+                "reference": "51a2b2670f24a779e52e5329605b5c59f854d5f3"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/osumionline/plugin-image/zipball/51a2b2670f24a779e52e5329605b5c59f854d5f3",
+                "reference": "51a2b2670f24a779e52e5329605b5c59f854d5f3",
+                "shasum": ""
+            },
+            "require": {
+                "ext-gd": "*",
+                "php": ">=8.2"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Osumi\\OsumiFramework\\Plugins\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Plugin OImage para Osumi Framework",
+            "support": {
+                "issues": "https://github.com/osumionline/plugin-image/issues",
+                "source": "https://github.com/osumionline/plugin-image/tree/v3.0.0"
+            },
+            "time": "2024-09-02T22:14:25+00:00"
+        },
+        {
+            "name": "osumionline/plugin-otoken",
+            "version": "3.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/osumionline/plugin-otoken.git",
+                "reference": "85fe973b0e5e8d69ee7a6112e5be07a71f195784"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/osumionline/plugin-otoken/zipball/85fe973b0e5e8d69ee7a6112e5be07a71f195784",
+                "reference": "85fe973b0e5e8d69ee7a6112e5be07a71f195784",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=8.2"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Osumi\\OsumiFramework\\Plugins\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Plugin OToken para Osumi Framework",
+            "support": {
+                "issues": "https://github.com/osumionline/plugin-otoken/issues",
+                "source": "https://github.com/osumionline/plugin-otoken/tree/v3.0.0"
+            },
+            "time": "2024-09-02T10:39:49+00:00"
+        }
+    ],
+    "packages-dev": [],
+    "aliases": [],
+    "minimum-stability": "stable",
+    "stability-flags": [],
+    "prefer-stable": true,
+    "prefer-lowest": false,
+    "platform": {
+        "php": ">=8.2"
+    },
+    "platform-dev": [],
+    "plugin-api-version": "2.6.0"
+}
