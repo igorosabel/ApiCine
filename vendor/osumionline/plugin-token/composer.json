@@ -1,5 +1,5 @@
 {
-  "name": "osumionline/plugin-otoken",
+  "name": "osumionline/plugin-token",
   "description": "Plugin OToken para Osumi Framework",
   "version": "3.0.0",
   "type": "library",

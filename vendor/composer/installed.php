@@ -1,9 +1,9 @@
 <?php return array(
     'root' => array(
         'name' => 'osumionline/new',
-        'pretty_version' => '1.0.0+no-version-set',
-        'version' => '1.0.0.0',
-        'reference' => null,
+        'pretty_version' => 'dev-main',
+        'version' => 'dev-main',
+        'reference' => '690730c7124f4e647470908d7b8785fe3f4af4a0',
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -20,9 +20,9 @@
             'dev_requirement' => false,
         ),
         'osumionline/new' => array(
-            'pretty_version' => '1.0.0+no-version-set',
-            'version' => '1.0.0.0',
-            'reference' => null,
+            'pretty_version' => 'dev-main',
+            'version' => 'dev-main',
+            'reference' => '690730c7124f4e647470908d7b8785fe3f4af4a0',
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
@@ -37,12 +37,12 @@
             'aliases' => array(),
             'dev_requirement' => false,
         ),
-        'osumionline/plugin-otoken' => array(
+        'osumionline/plugin-token' => array(
             'pretty_version' => '3.0.0',
             'version' => '3.0.0.0',
-            'reference' => '85fe973b0e5e8d69ee7a6112e5be07a71f195784',
+            'reference' => 'dcc3511b01cf05258a923c5a9b331cf6bc813cde',
             'type' => 'library',
-            'install_path' => __DIR__ . '/../osumionline/plugin-otoken',
+            'install_path' => __DIR__ . '/../osumionline/plugin-token',
             'aliases' => array(),
             'dev_requirement' => false,
         ),

@@ -6,7 +6,7 @@ $vendorDir = dirname(__DIR__);
 $baseDir = dirname($vendorDir);
 
 return array(
-    'Osumi\\OsumiFramework\\Plugins\\' => array($vendorDir . '/osumionline/plugin-otoken/src', $vendorDir . '/osumionline/plugin-image/src'),
+    'Osumi\\OsumiFramework\\Plugins\\' => array($vendorDir . '/osumionline/plugin-image/src', $vendorDir . '/osumionline/plugin-token/src'),
     'Osumi\\OsumiFramework\\App\\' => array($baseDir . '/src'),
     'Osumi\\OsumiFramework\\' => array($vendorDir . '/osumionline/framework/src'),
 );

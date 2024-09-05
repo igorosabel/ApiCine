@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "89db4148ffbada59b965be89015d6194",
+    "content-hash": "f8677434e3395f90126b782be0a0f979",
     "packages": [
         {
             "name": "osumionline/framework",
@@ -91,17 +91,17 @@
             "time": "2024-09-02T22:14:25+00:00"
         },
         {
-            "name": "osumionline/plugin-otoken",
+            "name": "osumionline/plugin-token",
             "version": "3.0.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/osumionline/plugin-otoken.git",
-                "reference": "85fe973b0e5e8d69ee7a6112e5be07a71f195784"
+                "url": "https://github.com/osumionline/plugin-token.git",
+                "reference": "dcc3511b01cf05258a923c5a9b331cf6bc813cde"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/osumionline/plugin-otoken/zipball/85fe973b0e5e8d69ee7a6112e5be07a71f195784",
-                "reference": "85fe973b0e5e8d69ee7a6112e5be07a71f195784",
+                "url": "https://api.github.com/repos/osumionline/plugin-token/zipball/dcc3511b01cf05258a923c5a9b331cf6bc813cde",
+                "reference": "dcc3511b01cf05258a923c5a9b331cf6bc813cde",
                 "shasum": ""
             },
             "require": {
@@ -119,10 +119,10 @@
             ],
             "description": "Plugin OToken para Osumi Framework",
             "support": {
-                "issues": "https://github.com/osumionline/plugin-otoken/issues",
-                "source": "https://github.com/osumionline/plugin-otoken/tree/v3.0.0"
+                "issues": "https://github.com/osumionline/plugin-token/issues",
+                "source": "https://github.com/osumionline/plugin-token/tree/v3.0.0"
             },
-            "time": "2024-09-02T10:39:49+00:00"
+            "time": "2024-09-05T07:18:40+00:00"
         }
     ],
     "packages-dev": [],
