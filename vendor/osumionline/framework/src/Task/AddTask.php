@@ -4,6 +4,7 @@ namespace Osumi\OsumiFramework\Task;
 
 use Osumi\OsumiFramework\Core\OTask;
 use Osumi\OsumiFramework\Tools\OTools;
+use Osumi\OsumiFramework\Tools\OBuild;
 use Osumi\OsumiFramework\DB\OModel;
 
 /**
@@ -43,7 +44,7 @@ class addTask extends OTask {
 		$values['module_actions'] = $values['module_path'].'/Actions';
 		$values['module_file']    = $values['module_path'].'/'.ucfirst($values['module_name']).'Module.php';
 
-		$add = OTools::addModule($values['module_name']);
+		$add = OBuild::addModule($values['module_name']);
 
 		if ($add['status']=='exists') {
 			$values['error'] = 2;
@@ -85,7 +86,7 @@ class addTask extends OTask {
 		$values['action_url']     = $params[3];
 		$values['action_type']    = isset($params[4]) ? $params[4] : null;
 
-		$add = OTools::addAction($values['module_name'], $values['action_name'], $values['action_url'], $values['action_type']);
+		$add = OBuild::addAction($values['module_name'], $values['action_name'], $values['action_url'], $values['action_type']);
 		$values['action_folder']   = $values['module_actions'].'/'.$values['action_name'];
 		$values['action_file']     = $values['action_folder'].'/'.$values['action_name'].'Action.php';
 		$values['action_template'] = $values['action_folder'].'/'.$values['action_name'].'Action.'.$add['type'];
@@ -135,7 +136,7 @@ class addTask extends OTask {
 		$values['service_name'] = $params[1];
 		$values['service_file'] = $this->getConfig()->getDir('app_service').ucfirst($values['service_name']).'Service.php';
 
-		$add = OTools::addService($values['service_name']);
+		$add = OBuild::addService($values['service_name']);
 
 		if ($add['status']=='exists') {
 			$values['error'] = 2;
@@ -172,7 +173,7 @@ class addTask extends OTask {
 		$values['task_name'] = $params[1];
 		$values['task_file'] = $this->getConfig()->getDir('app_task').ucfirst($values['task_name']).'Task.php';
 
-		$add = OTools::addTask($values['task_name']);
+		$add = OBuild::addTask($values['task_name']);
 
 		if ($add['status']=='exists') {
 			$values['error'] = 2;
@@ -248,12 +249,12 @@ class addTask extends OTask {
 		$values['list_folder']        = $this->getConfig()->getDir('app_component').'Model/'.$values['model_name'].'List/';
 		$values['list_file']          = $values['model_name'].'ListComponent.php';
 		$values['list_template_file'] = $values['model_name'].'ListTemplate.php';
-		$values['component_name']          = $values['model_name'].'Component';
+		$values['component_name']          = $values['model_name'];
 		$values['component_folder']        = $this->getConfig()->getDir('app_component').'Model/'.$values['model_name'].'/';
 		$values['component_file']          = $values['model_name'].'Component.php';
 		$values['component_template_file'] = $values['model_name'].'Template.php';
 
-		$add = OTools::addModelComponent($values);
+		$add = OBuild::addModelComponent($values);
 		if ($add=='list-folder-exists') {
 			$values['error'] = 3;
 			echo OTools::getPartial($path, $values);
@@ -300,6 +301,90 @@ class addTask extends OTask {
 	}
 
 	/**
+	 * Creates a new component with the given parameters
+	 *
+	 * @param array Array with the action "component" and the name of the new component
+	 *
+	 * @return void
+	 */
+	private function createComponent(array $params): void {
+		$path = $this->getConfig()->getDir('ofw_template').'add/createComponent.php';
+		$values = [
+			'colors'    => $this->getColors(),
+			'folders' => '',
+			'path' => '',
+			'component_name' => '',
+			'component_file' => '',
+			'template_file' => '',
+			'error'     => 0
+		];
+
+		if (count($params)<2) {
+			$values['error'] = 1;
+			echo OTools::getPartial($path, $values);
+			exit;
+		}
+
+		$component_name_parts = explode('/', $params[1]);
+		for ($i=0; $i<count($component_name_parts); $i++) {
+			$component_name_parts[$i] = ucfirst($component_name_parts[$i]);
+		}
+		$values['folders'] = implode('/', $component_name_parts);
+		$values['path'] = $this->getConfig()->getDir('app_component').$values['folders'].'/';
+		$values['component_name'] = $component_name_parts[count($component_name_parts) -1];
+		$values['component_file'] = $values['path'].$values['component_name'].'Component.php';
+		$values['template_file'] = $values['path'].$values['component_name'].'Template.php';
+
+		$add = OBuild::addComponent($values);
+
+		if ($add=='exists') {
+			$values['error'] = 2;
+			echo OTools::getPartial($path, $values);
+			exit;
+		}
+
+		echo OTools::getPartial($path, $values);
+		exit;
+	}
+
+	/**
+	 * Creates a new filter with the given parameters
+	 *
+	 * @param array Array with the action "filter" and the name of the new component
+	 *
+	 * @return void
+	 */
+	private function createFilter(array $params): void {
+		$path = $this->getConfig()->getDir('ofw_template').'add/createFilter.php';
+		$values = [
+			'colors'    => $this->getColors(),
+			'filter_name' => '',
+			'filter_file' => '',
+			'error'     => 0
+		];
+
+		if (count($params)<2) {
+			$values['error'] = 1;
+			echo OTools::getPartial($path, $values);
+			exit;
+		}
+
+		$values['filter_name'] = ucfirst($params[1]);
+		$values['filter_file'] = $this->getConfig()->getDir('app_filter').$values['filter_name'].'Filter.php';
+
+		$add = OBuild::addFilter($values);
+
+		if ($add=='exists') {
+			$values['error'] = 2;
+			echo OTools::getPartial($path, $values);
+			exit;
+		}
+
+		echo OTools::getPartial($path, $values);
+		exit;
+	}
+
+	/**
 	 * Run the task
 	 *
 	 * @param array Command line parameters: option and name
@@ -307,7 +392,7 @@ class addTask extends OTask {
 	 * @return void Echoes framework information
 	 */
 	public function run(array $params): void {
-		$available_options = ['module', 'action', 'service', 'task', 'modelComponent'];
+		$available_options = ['module', 'action', 'service', 'task', 'modelComponent','component', 'filter'];
 		$option = (count($params)>0) ? $params[0] : 'none';
 		$option = in_array($option, $available_options) ? $option : 'none';
 
@@ -330,6 +415,14 @@ class addTask extends OTask {
 			break;
 			case 'modelComponent': {
 				$this->createModelComponent($params);
+			}
+			break;
+			case 'component': {
+				$this->createComponent($params);
+			}
+			break;
+			case 'filter': {
+				$this->createFilter($params);
 			}
 			break;
 			case 'none': {

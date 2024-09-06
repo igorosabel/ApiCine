@@ -12,12 +12,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/osumionline/framework.git",
-                "reference": "0cc75e04a4320aa1c5dd2cfe671b12fd8bf6198a"
+                "reference": "86690aada3d9a148ebf33e9c7d23bea4f3cfd8ed"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/osumionline/framework/zipball/0cc75e04a4320aa1c5dd2cfe671b12fd8bf6198a",
-                "reference": "0cc75e04a4320aa1c5dd2cfe671b12fd8bf6198a",
+                "url": "https://api.github.com/repos/osumionline/framework/zipball/86690aada3d9a148ebf33e9c7d23bea4f3cfd8ed",
+                "reference": "86690aada3d9a148ebf33e9c7d23bea4f3cfd8ed",
                 "shasum": ""
             },
             "require": {
@@ -53,7 +53,7 @@
                 "issues": "https://github.com/osumionline/framework/issues",
                 "source": "https://github.com/osumionline/framework/tree/v9.0.0"
             },
-            "time": "2024-09-02T10:01:32+00:00"
+            "time": "2024-09-06T08:57:26+00:00"
         },
         {
             "name": "osumionline/plugin-image",

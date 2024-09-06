@@ -3,7 +3,7 @@
         'name' => 'osumionline/new',
         'pretty_version' => 'dev-main',
         'version' => 'dev-main',
-        'reference' => '690730c7124f4e647470908d7b8785fe3f4af4a0',
+        'reference' => 'f18331f8f23d6519d13610f881cc426123e4ac0e',
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -13,7 +13,7 @@
         'osumionline/framework' => array(
             'pretty_version' => '9.0.0',
             'version' => '9.0.0.0',
-            'reference' => '0cc75e04a4320aa1c5dd2cfe671b12fd8bf6198a',
+            'reference' => '86690aada3d9a148ebf33e9c7d23bea4f3cfd8ed',
             'type' => 'library',
             'install_path' => __DIR__ . '/../osumionline/framework',
             'aliases' => array(),
@@ -22,7 +22,7 @@
         'osumionline/new' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
-            'reference' => '690730c7124f4e647470908d7b8785fe3f4af4a0',
+            'reference' => 'f18331f8f23d6519d13610f881cc426123e4ac0e',
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
