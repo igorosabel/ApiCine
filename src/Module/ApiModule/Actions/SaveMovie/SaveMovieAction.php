@@ -14,6 +14,8 @@ use Osumi\OsumiFramework\App\Model\Movie;
 	services: ['Web']
 )]
 class SaveMovieAction extends OAction {
+	public string $status = 'ok';
+
 	/**
 	 * Función para guardar una nueva entrada
 	 *
@@ -21,7 +23,6 @@ class SaveMovieAction extends OAction {
 	 * @return void
 	 */
 	public function run(MovieDTO $data):void {
-		$status = 'ok';
 		if ($data->isValid()) {
 			$id_cinema    = $data->getIdCinema();
 			$name         = $data->getName();
@@ -33,10 +34,10 @@ class SaveMovieAction extends OAction {
 			$filter       = $data->getFilter();
 		}
 		else {
-			$status = 'error';
+			$this->status = 'error';
 		}
 
-		if ($status=='ok') {
+		if ($this->status=='ok') {
 			$movie = new Movie();
 			$movie->set('id_user',    $filter['id']);
 			$movie->set('id_cinema',  $id_cinema);
@@ -64,7 +65,5 @@ class SaveMovieAction extends OAction {
 				$this->service['Web']->saveCover($cover, $movie->get('id'), $cover_ext);
 			}
 		}
-
-		$this->getTemplate()->add('status', $status);
 	}
 }

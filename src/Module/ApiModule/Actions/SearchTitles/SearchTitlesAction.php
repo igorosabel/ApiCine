@@ -13,6 +13,10 @@ use Osumi\OsumiFramework\App\Component\Api\MoviesComponent\MoviesComponent;
 	services: ['Web']
 )]
 class SearchTitlesAction extends OAction {
+	public string $status = 'ok';
+	public int $num_pages = 0;
+	public ?MoviesComponent $list = null;
+
 	/**
 	 * Función para buscar películas entre las que el usuario ha visto
 	 *
@@ -20,25 +24,17 @@ class SearchTitlesAction extends OAction {
 	 * @return void
 	 */
 	public function run(ORequest $req):void {
-		$status = 'ok';
 		$q      = $req->getParamString('q');
 		$filter = $req->getFilter('Login');
-		$num_pages = 0;
-		$movies_component = new MoviesComponent(['list' => []]);
+		$this->list = new MoviesComponent(['list' => []]);
 
 		if (is_null($q) || is_null($filter) || !array_key_exists('id', $filter)) {
-			$status = 'error';
+			$this->status = 'error';
 		}
 
-		if ($status=='ok') {
-			$list      = $this->service['Web']->getMoviesByTitle($filter['id'], $q);
-			$num_pages = $this->service['Web']->getMoviesPagesByTitle($filter['id'], $q);
-
-			$movies_component->setValue('list', $list);
+		if ($this->status=='ok') {
+			$this->num_pages = $this->service['Web']->getMoviesPagesByTitle($filter['id'], $q);
+			$this->list->setValue('list', $this->service['Web']->getMoviesByTitle($filter['id'], $q));
 		}
-
-		$this->getTemplate()->add('status',    $status);
-		$this->getTemplate()->add('num_pages', $num_pages);
-		$this->getTemplate()->add('list',      $movies_component);
 	}
 }

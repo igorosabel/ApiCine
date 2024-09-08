@@ -12,6 +12,11 @@ use Osumi\OsumiFramework\Plugins\OToken;
 	url: '/register'
 )]
 class RegisterAction extends OAction {
+	public string       $status = 'ok';
+	public string | int $id     = 'null';
+	public string       $name   = '';
+	public string       $token  = '';
+
 	/**
 	 * Función para registrarse en la aplicación
 	 *
@@ -19,37 +24,29 @@ class RegisterAction extends OAction {
 	 * @return void
 	 */
 	public function run(UserDTO $data):void {
-		$status = 'ok';
-		$id    = 'null';
-		$token = '';
-
 		if (!$data->isValid()) {
-			$status = 'error';
+			$this->status = 'error';
 		}
 
-		if ($status=='ok') {
+		if ($this->status=='ok') {
 			$u = new User();
-			if ($u->find(['name'=>$data->getName()])) {
-				$status = 'error-user';
+			if ($u->find(['name' => $data->getName()])) {
+				$this->status = 'error-user';
 			}
 			else {
 				$u->set('name', $data->getName());
 				$u->set('pass', password_hash($data->getPass(), PASSWORD_BCRYPT));
 				$u->save();
 
-				$id = $u->get('id');
+				$this->id = $u->get('id');
+				$this->name = $data->getName();
 
 				$tk = new OToken($this->getConfig()->getExtra('secret'));
 				$tk->addParam('id',   $id);
 				$tk->addParam('name', $data->getName());
 				$tk->addParam('exp', time() + (24 * 60 * 60));
-				$token = $tk->getToken();
+				$this->token = $tk->getToken();
 			}
 		}
-
-		$this->getTemplate()->add('status', $status);
-		$this->getTemplate()->add('id',     $id);
-		$this->getTemplate()->add('name',   $data->getName());
-		$this->getTemplate()->add('token',  $token);
 	}
 }

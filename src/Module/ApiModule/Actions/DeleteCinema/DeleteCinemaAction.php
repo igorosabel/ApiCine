@@ -13,6 +13,8 @@ use Osumi\OsumiFramework\App\Model\Cinema;
 	services: ['Web']
 )]
 class DeleteCinemaAction extends OAction {
+	public string $status = 'ok';
+
 	/**
 	 * Función para borrar un cine
 	 *
@@ -20,29 +22,26 @@ class DeleteCinemaAction extends OAction {
 	 * @return void
 	 */
 	public function run(ORequest $req):void {
-		$status = 'ok';
 		$id     = $req->getParamInt('id');
 		$filter = $req->getFilter('Login');
 
 		if (is_null($id) || is_null($filter) || !array_key_exists('id', $filter)) {
-			$status = 'error';
+			$this->status = 'error';
 		}
 
-		if ($status=='ok') {
+		if ($this->status=='ok') {
 			$cinema = new Cinema();
 			if ($cinema->find(['id'=>$id])) {
 				if ($cinema->get('id_user')==$filter['id']) {
 					$this->service['Web']->deleteCinema($cinema);
 				}
 				else {
-					$status = 'error';
+					$this->status = 'error';
 				}
 			}
 			else {
-				$status = 'error';
+				$this->status = 'error';
 			}
 		}
-
-		$this->getTemplate()->add('status', $status);
 	}
 }

@@ -12,6 +12,11 @@ use Osumi\OsumiFramework\Plugins\OToken;
 	url: '/login'
 )]
 class LoginAction extends OAction {
+	public string       $status = 'ok';
+	public string | int $id     = 'null';
+	public string       $name   = '';
+	public string       $token  = '';
+
 	/**
 	 * Función para iniciar sesión en la aplicación
 	 *
@@ -19,38 +24,30 @@ class LoginAction extends OAction {
 	 * @return void
 	 */
 	public function run(UserDTO $data):void {
-		$status = 'ok';
-		$id    = 'null';
-		$token = '';
-
 		if (!$data->isValid()) {
-			$status = 'error';
+			$this->status = 'error';
 		}
 
-		if ($status=='ok') {
+		if ($this->status=='ok') {
 			$u = new User();
 			if ($u->find(['name'=>$data->getName()])) {
 				if (password_verify($data->getPass(), $u->get('pass'))) {
-					$id = $u->get('id');
+					$this->id = $u->get('id');
+					$this->name = $data->getName();
 
 					$tk = new OToken($this->getConfig()->getExtra('secret'));
-					$tk->addParam('id',   $id);
-					$tk->addParam('name', $data->getName());
+					$tk->addParam('id',   $this->id);
+					$tk->addParam('name', $this->name);
 					$tk->addParam('exp', time() + (24 * 60 * 60));
-					$token = $tk->getToken();
+					$this->token = $tk->getToken();
 				}
 				else {
-					$status = 'error';
+					$this->status = 'error';
 				}
 			}
 			else {
-				$status = 'error';
+				$this->status = 'error';
 			}
 		}
-
-		$this->getTemplate()->add('status', $status);
-		$this->getTemplate()->add('id',     $id);
-		$this->getTemplate()->add('name',   $data->getName());
-		$this->getTemplate()->add('token',  $token);
 	}
 }

@@ -11,7 +11,7 @@
 		"collate": "utf8mb4_unicode_ci"
 	},
 	"log_level": "ERROR",
-	"base_url": "https://apicinetest.osumi.es/",
+	"base_url": "https://apicine.osumi.es/",
 	"error_pages": {
 		"404": "/not-found"
 	},

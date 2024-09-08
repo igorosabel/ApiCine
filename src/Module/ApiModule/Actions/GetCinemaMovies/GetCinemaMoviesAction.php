@@ -6,13 +6,16 @@ use Osumi\OsumiFramework\Routing\OModuleAction;
 use Osumi\OsumiFramework\Routing\OAction;
 use Osumi\OsumiFramework\Web\ORequest;
 use Osumi\OsumiFramework\App\Model\Cinema;
-use Osumi\OsumiFramework\App\Component\Api\MoviesComponent\MoviesComponent;
+use Osumi\OsumiFramework\App\Component\Api\Movies\MoviesComponent;
 
 #[OModuleAction(
 	url: '/get-cinema-movies',
 	filters: ['Login']
 )]
 class GetCinemaMoviesAction extends OAction {
+	public string $status = 'ok';
+	public ?MoviesComponent $list = null;
+
 	/**
 	 * Función para obtener la lista de las últimas películas de un cine concreto
 	 *
@@ -20,32 +23,27 @@ class GetCinemaMoviesAction extends OAction {
 	 * @return void
 	 */
 	public function run(ORequest $req):void {
-		$status = 'ok';
 		$id     = $req->getParamInt('id');
 		$filter = $req->getFilter('Login');
-		$movies_component = new MoviesComponent(['list' => []]);
+		$this->list = new MoviesComponent(['list' => []]);
 
 		if (is_null($id) || is_null($filter) || !array_key_exists('id', $filter)) {
-			$status = 'error';
+			$this->status = 'error';
 		}
 
-		if ($status=='ok') {
+		if ($this->status=='ok') {
 			$cinema = new Cinema();
 			if ($cinema->find(['id'=>$id])) {
 				if ($cinema->get('id_user')==$filter['id']) {
-					$list = $cinema->getMovies();
-					$movies_component->setValue('list', $list);
+					$this->list->setValue('list', $cinema->getMovies());
 				}
 				else {
-					$status = 'error';
+					$this->status = 'error';
 				}
 			}
 			else {
-				$status = 'error';
+				$this->status = 'error';
 			}
 		}
-
-		$this->getTemplate()->add('status', $status);
-		$this->getTemplate()->add('list',   $movies_component);
 	}
 }

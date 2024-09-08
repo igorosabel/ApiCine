@@ -13,6 +13,8 @@ use Osumi\OsumiFramework\App\Model\Cinema;
 	filters: ['Login']
 )]
 class AddCinemaAction extends OAction {
+	public string $status = 'ok';
+
 	/**
 	 * Función para añadir un nuevo cine
 	 *
@@ -20,15 +22,14 @@ class AddCinemaAction extends OAction {
 	 * @return void
 	 */
 	public function run(ORequest $req):void {
-		$status = 'ok';
 		$name   = $req->getParamString('name');
 		$filter = $req->getFilter('Login');
 
 		if (is_null($name) || is_null($filter) || !array_key_exists('id', $filter)) {
-			$status = 'error';
+			$this->status = 'error';
 		}
 
-		if ($status=='ok') {
+		if ($this->status=='ok') {
 			$cinema = new Cinema();
 			$cinema->set('id_user', $filter['id']);
 			$cinema->set('name', $name);
@@ -36,7 +37,5 @@ class AddCinemaAction extends OAction {
 
 			$cinema->save();
 		}
-
-		$this->getTemplate()->add('status', $status);
 	}
 }

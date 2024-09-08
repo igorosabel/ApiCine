@@ -12,6 +12,8 @@ use Osumi\OsumiFramework\App\Model\Cinema;
 	filters: ['Login']
 )]
 class EditCinemaAction extends OAction {
+	public string $status = 'ok';
+
 	/**
 	 * Función para editar el nombre de un cine
 	 *
@@ -19,16 +21,15 @@ class EditCinemaAction extends OAction {
 	 * @return void
 	 */
 	public function run(ORequest $req):void {
-		$status = 'ok';
 		$id     = $req->getParamInt('id');
 		$name   = $req->getParamString('name');
 		$filter = $req->getFilter('Login');
 
 		if (is_null($id) || is_null($name) || is_null($filter) || !array_key_exists('id', $filter)) {
-			$status = 'error';
+			$this->status = 'error';
 		}
 
-		if ($status=='ok') {
+		if ($this->status=='ok') {
 			$cinema = new Cinema();
 			if ($cinema->find(['id'=>$id])) {
 				if ($cinema->get('id_user')==$filter['id']) {
@@ -36,14 +37,12 @@ class EditCinemaAction extends OAction {
 					$cinema->save();
 				}
 				else {
-					$status = 'error';
+					$this->status = 'error';
 				}
 			}
 			else {
-				$status = 'error';
+				$this->status = 'error';
 			}
 		}
-
-		$this->getTemplate()->add('status', $status);
 	}
 }

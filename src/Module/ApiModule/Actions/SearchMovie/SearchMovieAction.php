@@ -5,7 +5,7 @@ namespace Osumi\OsumiFramework\App\Module\ApiModule\Actions\SearchMovie;
 use Osumi\OsumiFramework\Routing\OModuleAction;
 use Osumi\OsumiFramework\Routing\OAction;
 use Osumi\OsumiFramework\Web\ORequest;
-use Osumi\OsumiFramework\App\Component\Api\TmdbListComponent\TmdbListComponent;
+use Osumi\OsumiFramework\App\Component\Api\TmdbList\TmdbListComponent;
 
 #[OModuleAction(
 	url: '/search-movie',
@@ -13,6 +13,9 @@ use Osumi\OsumiFramework\App\Component\Api\TmdbListComponent\TmdbListComponent;
 	services: ['Web']
 )]
 class SearchMovieAction extends OAction {
+	public string $status = 'ok';
+	public ?TmdbListComponent $list = null;
+
 	/**
 	 * Función para buscar películas en The Movie Data Base
 	 *
@@ -20,16 +23,15 @@ class SearchMovieAction extends OAction {
 	 * @return void
 	 */
 	public function run(ORequest $req):void {
-		$status = 'ok';
 		$q      = $req->getParamString('q');
 		$filter = $req->getFilter('Login');
-		$tmdb_list_component = new TmdbListComponent(['list' => []]);
+		$this->list = new TmdbListComponent(['list' => []]);
 
 		if (is_null($q) || is_null($filter) || !array_key_exists('id', $filter)) {
-			$status = 'error';
+			$this->status = 'error';
 		}
 
-		if ($status=='ok') {
+		if ($this->status=='ok') {
 			/*
 				// Lista de películas
 				https://api.themoviedb.org/3/search/movie?api_key=f54cd33501fddec9a5f6a82d27c61207&language=es-ES&query=angel%20de%20combate
@@ -40,11 +42,7 @@ class SearchMovieAction extends OAction {
 				// IMDB URL
 				https://www.imdb.com/title/XXXXX/
 			*/
-			$list = $this->service['Web']->tmdbList($q);
-			$tmdb_list_component->setValue('list', $list);
+			$this->list->setValue('list', $this->service['Web']->tmdbList($q));
 		}
-
-		$this->getTemplate()->add('status', $status);
-		$this->getTemplate()->add('list',   $tmdb_list_component);
 	}
 }
