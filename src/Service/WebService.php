@@ -9,7 +9,7 @@ use Osumi\OsumiFramework\App\Model\Cinema;
 use Osumi\OsumiFramework\App\Model\Movie;
 use Osumi\OsumiFramework\Plugins\OImage;
 
-class webService extends OService {
+class WebService extends OService {
 	/**
 	 * Load service tools
 	 */
