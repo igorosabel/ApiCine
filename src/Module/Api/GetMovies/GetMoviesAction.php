@@ -7,8 +7,8 @@ use Osumi\OsumiFramework\Web\ORequest;
 use Osumi\OsumiFramework\App\Component\Api\Movies\MoviesComponent;
 
 class GetMoviesAction extends OAction {
-	public string $status = 'ok';
-	public int $num_pages = 0;
+	public string $status    = 'ok';
+	public float  $num_pages = 0;
 	public ?MoviesComponent $list = null;
 
 	/**
