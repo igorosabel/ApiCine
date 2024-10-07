@@ -4,12 +4,19 @@ namespace Osumi\OsumiFramework\App\Module\Api\SelectResult;
 
 use Osumi\OsumiFramework\Routing\OAction;
 use Osumi\OsumiFramework\Web\ORequest;
+use Osumi\OsumiFramework\App\Service\WebService;
 
 class SelectResultAction extends OAction {
+	private ?WebService $ws = null;
+
 	public string $status   = 'ok';
 	public string $title    = '';
 	public string $poster   = '';
 	public string $imdb_url = '';
+
+	public function __construct() {
+		$this->ws = inject(WebService::class);
+	}
 
 	/**
 	 * Función para obtener el detalle de una película en The Movie Data Base
@@ -25,8 +32,8 @@ class SelectResultAction extends OAction {
 			$this->status = 'error';
 		}
 
-		if ($this->status=='ok') {
-			$detail = $this->service['Web']->tmdbDetail($id);
+		if ($this->status === 'ok') {
+			$detail = $this->ws->tmdbDetail($id);
 
 			$this->title    = $detail['title'];
 			$this->poster   = $detail['poster'];

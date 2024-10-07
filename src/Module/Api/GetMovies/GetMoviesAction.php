@@ -4,12 +4,20 @@ namespace Osumi\OsumiFramework\App\Module\Api\GetMovies;
 
 use Osumi\OsumiFramework\Routing\OAction;
 use Osumi\OsumiFramework\Web\ORequest;
+use Osumi\OsumiFramework\App\Service\WebService;
 use Osumi\OsumiFramework\App\Component\Api\Movies\MoviesComponent;
 
 class GetMoviesAction extends OAction {
+	private ?WebService $ws = null;
+
 	public string $status    = 'ok';
 	public float  $num_pages = 0;
 	public ?MoviesComponent $list = null;
+
+	public function __construct() {
+		$this->ws = inject(WebService::class);
+		$this->list = new MoviesComponent(['list' => []]);
+	}
 
 	/**
 	 * Función para obtener la lista de las últimas películas
@@ -20,15 +28,14 @@ class GetMoviesAction extends OAction {
 	public function run(ORequest $req):void {
 		$page   = $req->getParamInt('page');
 		$filter = $req->getFilter('Login');
-		$this->list = new MoviesComponent(['list' => []]);
 
 		if (is_null($page) || is_null($filter) || !array_key_exists('id', $filter)) {
 			$this->status = 'error';
 		}
 
-		if ($this->status=='ok') {
-			$this->num_pages = $this->service['Web']->getMoviesPages($filter['id']);
-			$this->list->setValue('list', $this->service['Web']->getMovies($filter['id'], $page));
+		if ($this->status === 'ok') {
+			$this->num_pages = $this->ws->getMoviesPages($filter['id']);
+			$this->list->setValue('list', $this->ws->getMovies($filter['id'], $page));
 		}
 	}
 }

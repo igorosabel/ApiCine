@@ -4,10 +4,17 @@ namespace Osumi\OsumiFramework\App\Module\Api\DeleteCinema;
 
 use Osumi\OsumiFramework\Routing\OAction;
 use Osumi\OsumiFramework\Web\ORequest;
+use Osumi\OsumiFramework\App\Service\WebService;
 use Osumi\OsumiFramework\App\Model\Cinema;
 
 class DeleteCinemaAction extends OAction {
+	private ?WebService $ws = null;
+
 	public string $status = 'ok';
+
+	public function __construct() {
+		$this->ws = inject(WebService::class);
+	}
 
 	/**
 	 * Función para borrar un cine
@@ -23,11 +30,11 @@ class DeleteCinemaAction extends OAction {
 			$this->status = 'error';
 		}
 
-		if ($this->status=='ok') {
+		if ($this->status === 'ok') {
 			$cinema = new Cinema();
-			if ($cinema->find(['id'=>$id])) {
-				if ($cinema->get('id_user')==$filter['id']) {
-					$this->service['Web']->deleteCinema($cinema);
+			if ($cinema->find(['id' => $id])) {
+				if ($cinema->get('id_user') === $filter['id']) {
+					$this->ws->deleteCinema($cinema);
 				}
 				else {
 					$this->status = 'error';

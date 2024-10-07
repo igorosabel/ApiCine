@@ -5,10 +5,17 @@ namespace Osumi\OsumiFramework\App\Module\Api\SaveMovie;
 use Osumi\OsumiFramework\Routing\OAction;
 use Osumi\OsumiFramework\Tools\OTools;
 use Osumi\OsumiFramework\App\DTO\MovieDTO;
+use Osumi\OsumiFramework\App\Service\WebService;
 use Osumi\OsumiFramework\App\Model\Movie;
 
 class SaveMovieAction extends OAction {
+	private ?WebService $ws = null;
+
 	public string $status = 'ok';
+
+	public function __construct() {
+		$this->ws = inject(WebService::class);
+	}
 
 	/**
 	 * Función para guardar una nueva entrada
@@ -31,32 +38,32 @@ class SaveMovieAction extends OAction {
 			$this->status = 'error';
 		}
 
-		if ($this->status=='ok') {
+		if ($this->status === 'ok') {
 			$movie = new Movie();
 			$movie->set('id_user',    $filter['id']);
 			$movie->set('id_cinema',  $id_cinema);
 			$movie->set('name',       $name);
 			$movie->set('slug',       OTools::slugify($name));
 			$movie->set('imdb_url',   $imdb_url);
-			$movie->set('movie_date', $this->service['Web']->getParsedDate($date));
+			$movie->set('movie_date', $this->ws->getParsedDate($date));
 			$movie->save();
 
 			$cover_ext = null;
-			if ($cover_status==2) {
+			if ($cover_status === 2) {
 				$cover_ext = array_pop(explode('.', $cover));
 			}
 			else {
-				$cover_ext = $this->service['Web']->getImageExt($cover);
+				$cover_ext = $this->ws->getImageExt($cover);
 			}
-			$ticket_ext = $this->service['Web']->getImageExt($ticket);
+			$ticket_ext = $this->ws->getImageExt($ticket);
 
-			$this->service['Web']->saveTicket($ticket, $movie->get('id'), $ticket_ext);
-			if ($cover_status==2) {
+			$this->ws->saveTicket($ticket, $movie->get('id'), $ticket_ext);
+			if ($cover_status === 2) {
 				$tmdb_cover = file_get_contents($cover);
-				$this->service['Web']->saveCoverImage($tmdb_cover, $movie->get('id'), $cover_ext);
+				$this->ws->saveCoverImage($tmdb_cover, $movie->get('id'), $cover_ext);
 			}
 			else {
-				$this->service['Web']->saveCover($cover, $movie->get('id'), $cover_ext);
+				$this->ws->saveCover($cover, $movie->get('id'), $cover_ext);
 			}
 		}
 	}
