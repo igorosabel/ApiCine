@@ -2,18 +2,19 @@
 
 namespace Osumi\OsumiFramework\App\Module\Api\SaveMovie;
 
-use Osumi\OsumiFramework\Routing\OAction;
+use Osumi\OsumiFramework\Core\OComponent;
 use Osumi\OsumiFramework\Tools\OTools;
 use Osumi\OsumiFramework\App\DTO\MovieDTO;
 use Osumi\OsumiFramework\App\Service\WebService;
 use Osumi\OsumiFramework\App\Model\Movie;
 
-class SaveMovieAction extends OAction {
+class SaveMovieComponent extends OComponent {
 	private ?WebService $ws = null;
 
 	public string $status = 'ok';
 
 	public function __construct() {
+		parent::__construct();
 		$this->ws = inject(WebService::class);
 	}
 
@@ -23,7 +24,7 @@ class SaveMovieAction extends OAction {
 	 * @param MovieDTO $data DTO con los datos de la película a guardar
 	 * @return void
 	 */
-	public function run(MovieDTO $data):void {
+	public function run(MovieDTO $data): void {
 		if ($data->isValid()) {
 			$id_cinema    = $data->getIdCinema();
 			$name         = $data->getName();

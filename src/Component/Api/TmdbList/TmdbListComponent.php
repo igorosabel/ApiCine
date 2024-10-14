@@ -4,4 +4,6 @@ namespace Osumi\OsumiFramework\App\Component\Api\TmdbList;
 
 use Osumi\OsumiFramework\Core\OComponent;
 
-class TmdbListComponent extends OComponent {}
+class TmdbListComponent extends OComponent {
+  public array $list = [];
+}

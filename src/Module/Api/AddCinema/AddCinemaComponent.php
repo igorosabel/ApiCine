@@ -2,12 +2,12 @@
 
 namespace Osumi\OsumiFramework\App\Module\Api\AddCinema;
 
-use Osumi\OsumiFramework\Routing\OAction;
+use Osumi\OsumiFramework\Core\OComponent;
 use Osumi\OsumiFramework\Web\ORequest;
 use Osumi\OsumiFramework\Tools\OTools;
 use Osumi\OsumiFramework\App\Model\Cinema;
 
-class AddCinemaAction extends OAction {
+class AddCinemaComponent extends OComponent {
 	public string $status = 'ok';
 
 	/**
@@ -16,7 +16,7 @@ class AddCinemaAction extends OAction {
 	 * @param ORequest $req Request object with method, headers, parameters and filters used
 	 * @return void
 	 */
-	public function run(ORequest $req):void {
+	public function run(ORequest $req): void {
 		$name   = $req->getParamString('name');
 		$filter = $req->getFilter('Login');
 
@@ -24,7 +24,7 @@ class AddCinemaAction extends OAction {
 			$this->status = 'error';
 		}
 
-		if ($this->status=='ok') {
+		if ($this->status === 'ok') {
 			$cinema = new Cinema();
 			$cinema->set('id_user', $filter['id']);
 			$cinema->set('name', $name);

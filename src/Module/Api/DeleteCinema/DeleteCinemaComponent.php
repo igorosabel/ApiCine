@@ -2,17 +2,18 @@
 
 namespace Osumi\OsumiFramework\App\Module\Api\DeleteCinema;
 
-use Osumi\OsumiFramework\Routing\OAction;
+use Osumi\OsumiFramework\Core\OComponent;
 use Osumi\OsumiFramework\Web\ORequest;
 use Osumi\OsumiFramework\App\Service\WebService;
 use Osumi\OsumiFramework\App\Model\Cinema;
 
-class DeleteCinemaAction extends OAction {
+class DeleteCinemaComponent extends OComponent {
 	private ?WebService $ws = null;
 
 	public string $status = 'ok';
 
 	public function __construct() {
+		parent::__construct();
 		$this->ws = inject(WebService::class);
 	}
 
@@ -22,7 +23,7 @@ class DeleteCinemaAction extends OAction {
 	 * @param ORequest $req Request object with method, headers, parameters and filters used
 	 * @return void
 	 */
-	public function run(ORequest $req):void {
+	public function run(ORequest $req): void {
 		$id     = $req->getParamInt('id');
 		$filter = $req->getFilter('Login');
 

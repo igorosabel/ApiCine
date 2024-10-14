@@ -1,4 +1,4 @@
-<?php foreach ($values['list'] as $i => $movie): ?>
+<?php foreach ($list as $i => $movie): ?>
 	{
 		"id": <?php echo $movie->get('id') ?>,
 		"idCinema": <?php echo $movie->get('id_cinema') ?>,
@@ -8,5 +8,5 @@
 		"ticket": "<?php echo urlencode($movie->getTicketUrl()) ?>",
 		"imdbUrl": "<?php echo urlencode($movie->get('imdb_url')) ?>",
 		"date": "<?php echo urlencode($movie->get('movie_date', 'd/m/Y')) ?>"
-	}<?php if ($i<count($values['list'])-1): ?>,<?php endif ?>
+	}<?php if ($i<count($list) - 1): ?>,<?php endif ?>
 <?php endforeach ?>

@@ -2,12 +2,12 @@
 
 namespace Osumi\OsumiFramework\App\Module\Api\Register;
 
-use Osumi\OsumiFramework\Routing\OAction;
+use Osumi\OsumiFramework\Core\OComponent;
 use Osumi\OsumiFramework\App\DTO\UserDTO;
 use Osumi\OsumiFramework\App\Model\User;
 use Osumi\OsumiFramework\Plugins\OToken;
 
-class RegisterAction extends OAction {
+class RegisterComponent extends OComponent {
 	public string       $status = 'ok';
 	public string | int $id     = 'null';
 	public string       $name   = '';
@@ -19,12 +19,12 @@ class RegisterAction extends OAction {
 	 * @param UserDTO $data Nombre y contraseña del usuario
 	 * @return void
 	 */
-	public function run(UserDTO $data):void {
+	public function run(UserDTO $data): void {
 		if (!$data->isValid()) {
 			$this->status = 'error';
 		}
 
-		if ($this->status=='ok') {
+		if ($this->status === 'ok') {
 			$u = new User();
 			if ($u->find(['name' => $data->getName()])) {
 				$this->status = 'error-user';

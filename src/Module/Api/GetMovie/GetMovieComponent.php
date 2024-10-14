@@ -2,11 +2,11 @@
 
 namespace Osumi\OsumiFramework\App\Module\Api\GetMovie;
 
-use Osumi\OsumiFramework\Routing\OAction;
+use Osumi\OsumiFramework\Core\OComponent;
 use Osumi\OsumiFramework\Web\ORequest;
 use Osumi\OsumiFramework\App\Model\Movie;
 
-class GetMovieAction extends OAction {
+class GetMovieComponent extends OComponent {
 	public string $status     = 'ok';
 	public string | int $id         = -1;
 	public string | int $id_cinema  = 'null';
@@ -23,7 +23,7 @@ class GetMovieAction extends OAction {
 	 * @param ORequest $req Request object with method, headers, parameters and filters used
 	 * @return void
 	 */
-	public function run(ORequest $req):void {
+	public function run(ORequest $req): void {
 		$this->id = $req->getParamInt('id');
 		$filter   = $req->getFilter('Login');
 
@@ -32,10 +32,10 @@ class GetMovieAction extends OAction {
 			$this->id = 'null';
 		}
 
-		if ($this->status=='ok') {
+		if ($this->status === 'ok') {
 			$movie = new Movie();
 			if ($movie->find(['id' => $this->id])) {
-				if ($movie->get('id_user') == $filter['id']) {
+				if ($movie->get('id_user') === $filter['id']) {
 					$this->id_cinema  = $movie->get('id_cinema');
 					$this->name       = $movie->get('name');
 					$this->slug       = $movie->get('slug');

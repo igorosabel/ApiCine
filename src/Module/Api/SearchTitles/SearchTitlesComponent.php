@@ -2,12 +2,12 @@
 
 namespace Osumi\OsumiFramework\App\Module\Api\SearchTitles;
 
-use Osumi\OsumiFramework\Routing\OAction;
+use Osumi\OsumiFramework\Core\OComponent;
 use Osumi\OsumiFramework\Web\ORequest;
 use Osumi\OsumiFramework\App\Service\WebService;
-use Osumi\OsumiFramework\App\Component\Api\MoviesComponent\MoviesComponent;
+use Osumi\OsumiFramework\App\Component\Api\Movies\MoviesComponent;
 
-class SearchTitlesAction extends OAction {
+class SearchTitlesComponent extends OComponent {
 	private ?WebService $ws = null;
 
 	public string $status = 'ok';
@@ -15,8 +15,9 @@ class SearchTitlesAction extends OAction {
 	public ?MoviesComponent $list = null;
 
 	public function __construct() {
+		parent::__construct();
 		$this->ws = inject(WebService::class);
-		$this->list = new MoviesComponent(['list' => []]);
+		$this->list = new MoviesComponent();
 	}
 
 	/**
@@ -25,7 +26,7 @@ class SearchTitlesAction extends OAction {
 	 * @param ORequest $req Request object with method, headers, parameters and filters used
 	 * @return void
 	 */
-	public function run(ORequest $req):void {
+	public function run(ORequest $req): void {
 		$q      = $req->getParamString('q');
 		$filter = $req->getFilter('Login');
 
@@ -35,7 +36,7 @@ class SearchTitlesAction extends OAction {
 
 		if ($this->status === 'ok') {
 			$this->num_pages = $this->ws->getMoviesPagesByTitle($filter['id'], $q);
-			$this->list->setValue('list', $this->ws->getMoviesByTitle($filter['id'], $q));
+			$this->list->list = $this->ws->getMoviesByTitle($filter['id'], $q);
 		}
 	}
 }

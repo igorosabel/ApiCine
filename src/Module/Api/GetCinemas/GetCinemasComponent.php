@@ -2,20 +2,21 @@
 
 namespace Osumi\OsumiFramework\App\Module\Api\GetCinemas;
 
-use Osumi\OsumiFramework\Routing\OAction;
+use Osumi\OsumiFramework\Core\OComponent;
 use Osumi\OsumiFramework\Web\ORequest;
 use Osumi\OsumiFramework\App\Service\WebService;
 use Osumi\OsumiFramework\App\Component\Api\Cinemas\CinemasComponent;
 
-class GetCinemasAction extends OAction {
+class GetCinemasComponent extends OComponent {
 	private ?WebService $ws = null;
 
 	public string $status = 'ok';
 	public ?CinemasComponent $list = null;
 
 	public function __construct() {
+		parent::__construct();
 		$this->ws = inject(WebService::class);
-		$this->list = new CinemasComponent(['list' => []]);
+		$this->list = new CinemasComponent();
 	}
 
 	/**
@@ -24,7 +25,7 @@ class GetCinemasAction extends OAction {
 	 * @param ORequest $req Request object with method, headers, parameters and filters used
 	 * @return void
 	 */
-	public function run(ORequest $req):void {
+	public function run(ORequest $req): void {
 		$filter = $req->getFilter('Login');
 
 		if (is_null($filter) || !array_key_exists('id', $filter)) {
@@ -32,7 +33,7 @@ class GetCinemasAction extends OAction {
 		}
 
 		if ($this->status === 'ok') {
-			$this->list->setValue('list', $this->ws->getCinemas($filter['id']));
+			$this->list->list = $this->ws->getCinemas($filter['id']);
 		}
 	}
 }
