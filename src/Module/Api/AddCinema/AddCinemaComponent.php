@@ -26,9 +26,9 @@ class AddCinemaComponent extends OComponent {
 
 		if ($this->status === 'ok') {
 			$cinema = new Cinema();
-			$cinema->set('id_user', $filter['id']);
-			$cinema->set('name', $name);
-			$cinema->set('slug', OTools::slugify($name));
+			$cinema->id_user = $filter['id'];
+			$cinema->name = $name;
+			$cinema->slug = OTools::slugify($name);
 
 			$cinema->save();
 		}

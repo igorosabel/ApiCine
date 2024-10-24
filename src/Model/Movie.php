@@ -2,82 +2,75 @@
 
 namespace Osumi\OsumiFramework\App\Model;
 
-use Osumi\OsumiFramework\DB\OModel;
-use Osumi\OsumiFramework\DB\OModelGroup;
-use Osumi\OsumiFramework\DB\OModelField;
+use Osumi\OsumiFramework\ORM\OModel;
+use Osumi\OsumiFramework\ORM\OPK;
+use Osumi\OsumiFramework\ORM\OField;
+use Osumi\OsumiFramework\ORM\OCreatedAt;
+use Osumi\OsumiFramework\ORM\OUpdatedAt;
 
 class Movie extends OModel {
-	/**
-	 * Configures current model object based on data-base table structure
-	 */
-	function __construct() {
-		$model = new OModelGroup(
-			new OModelField(
-				name: 'id',
-				type: OMODEL_PK,
-				comment: 'Id único de cada película'
-			),
-			new OModelField(
-				name: 'id_user',
-				type: OMODEL_NUM,
-				comment: 'Id del usuario que añade la película',
-				nullable: false,
-				ref: 'user.id'
-			),
-			new OModelField(
-				name: 'id_cinema',
-				type: OMODEL_NUM,
-				comment: 'Id del cine en el que un usuario ha visto la película',
-				nullable: false,
-				ref: 'cinema.id'
-			),
-			new OModelField(
-				name: 'name',
-				type: OMODEL_TEXT,
-				size: 50,
-				comment: 'Nombre de la película',
-				nullable: false
-			),
-			new OModelField(
-				name: 'slug',
-				type: OMODEL_TEXT,
-				size: 50,
-				comment: 'Slug del nombre de la película',
-				nullable: false
-			),
-			new OModelField(
-				name: 'imdb_url',
-				type: OMODEL_TEXT,
-				size: 200,
-				comment: 'Url de la película en IMDB',
-				nullable: false
-			),
-			new OModelField(
-				name: 'movie_date',
-				type: OMODEL_DATE,
-				comment: 'Fecha en la que un usuario fue a ver la película',
-				nullable: false
-			),
-			new OModelField(
-				name: 'created_at',
-				type: OMODEL_CREATED,
-				comment: 'Fecha de creación del registro'
-			),
-			new OModelField(
-				name: 'updated_at',
-				type: OMODEL_UPDATED,
-				comment: 'Fecha de última modificación del registro'
-			)
-		);
+	#[OPK(
+		comment: 'Id único de cada película'
+	)]
+	public ?int $id;
 
-		parent::load($model);
-	}
+	#[OField(
+		comment: 'Id del usuario que añade la película',
+		nullable: false,
+		ref: 'user.id'
+	)]
+	public ?int $id_user;
+
+	#[OField(
+		comment: 'Id del cine en el que un usuario ha visto la película',
+		nullable: false,
+		ref: 'cinema.id'
+	)]
+	public ?int $id_cinema;
+
+	#[OField(
+		comment: 'Nombre de la película',
+		max: 50,
+		nullable: false
+	)]
+	public ?string $name;
+
+	#[OField(
+		comment: 'Slug del nombre de la película',
+		max: 50,
+		nullable: false
+	)]
+	public ?string $slug;
+
+	#[OField(
+		comment: 'Url de la película en IMDB',
+		max: 200,
+		nullable: false
+	)]
+	public ?string $imdb_url;
+
+	#[OField(
+		comment: 'Fecha en la que un usuario fue a ver la película',
+		type: OField::DATE,
+		nullable: false
+	)]
+	public ?string $movie_date;
+
+	#[OCreatedAt(
+		comment: 'Fecha de creación del registro'
+	)]
+	public ?string $created_at;
+
+	#[OUpdatedAt(
+		comment: 'Fecha de última modificación del registro'
+	)]
+	public ?string $updated_at;
 
 	/**
 	 * Devuelve el nombre de la película
 	 */
-	public function __toString(){
-		return $this->get('name');
+	public function __toString() {
+		return $this->name;
 	}
 
 	/**
@@ -87,7 +80,7 @@ class Movie extends OModel {
 	 */
 	public function getCoverUrl(): string {
 		global $core;
-		return $core->config->getUrl('base').'cover/'.$this->get('id').'.webp';
+		return $core->config->getUrl('base').'cover/'.$this->id.'.webp';
 	}
 
 	/**
@@ -97,7 +90,7 @@ class Movie extends OModel {
 	 */
 	public function getTicketUrl(): string {
 		global $core;
-		return $core->config->getUrl('base').'ticket/'.$this->get('id').'.webp';
+		return $core->config->getUrl('base').'ticket/'.$this->id.'.webp';
 	}
 
 	/**
@@ -105,10 +98,10 @@ class Movie extends OModel {
 	 *
 	 * @return void
 	 */
-	public function deleteFull(): void{
+	public function deleteFull(): void {
 		global $core;
-		$cover_route  = $core->config->getDir('web').'cover/'.$this->get('id').'.webp';
-		$ticket_route = $core->config->getDir('web').'ticket/'.$this->get('id').'.webp';
+		$cover_route  = $core->config->getDir('web').'cover/'.$this->id.'.webp';
+		$ticket_route = $core->config->getDir('web').'ticket/'.$this->id.'.webp';
 
 		if (file_exists($cover_route)) {
 			unlink($cover_route);

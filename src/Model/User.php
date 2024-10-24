@@ -2,54 +2,46 @@
 
 namespace Osumi\OsumiFramework\App\Model;
 
-use Osumi\OsumiFramework\DB\OModel;
-use Osumi\OsumiFramework\DB\OModelGroup;
-use Osumi\OsumiFramework\DB\OModelField;
+use Osumi\OsumiFramework\ORM\OModel;
+use Osumi\OsumiFramework\ORM\OPK;
+use Osumi\OsumiFramework\ORM\OField;
+use Osumi\OsumiFramework\ORM\OCreatedAt;
+use Osumi\OsumiFramework\ORM\OUpdatedAt;
 
-class User extends OModel{
-	/**
-	 * Configures current model object based on data-base table structure
-	 */
-	 function __construct() {
-		$model = new OModelGroup(
-			new OModelField(
-				name: 'id',
-				type: OMODEL_PK,
-				comment: 'Id único de cada usuario'
-			),
-			new OModelField(
-				name: 'name',
-				type: OMODEL_TEXT,
-				size: 100,
-				comment: 'Nombre de usuario',
-				nullable: false
-			),
-			new OModelField(
-				name: 'pass',
-				type: OMODEL_TEXT,
-				size: 255,
-				comment: 'Contraseña cifrada del usuario',
-				nullable: false
-			),
-			new OModelField(
-				name: 'created_at',
-				type: OMODEL_CREATED,
-				comment: 'Fecha de creación del registro'
-			),
-			new OModelField(
-				name: 'updated_at',
-				type: OMODEL_UPDATED,
-				comment: 'Fecha de última modificación del registro'
-			)
-		);
+class User extends OModel {
+	#[OPK(
+		comment: 'Id único de cada usuario'
+	)]
+	public ?int $id;
 
-		parent::load($model);
-	}
+	#[OField(
+		comment: 'Nombre de usuario',
+		max: 100,
+		nullable: false
+	)]
+	public ?string $name;
+
+	#[OField(
+		comment: 'Contraseña cifrada del usuario',
+		max: 250,
+		nullable: false
+	)]
+	public ?string $pass;
+
+	#[OCreatedAt(
+		comment: 'Fecha de creación del registro'
+	)]
+	public ?string $created_at;
+
+	#[OUpdatedAt(
+		comment: 'Fecha de última modificación del registro'
+	)]
+	public ?string $updated_at;
 
 	/**
 	 * Devuelve el nombre del usuario
 	 */
-	public function __toString(){
-		return $this->get('name');
+	public function __toString() {
+		return $this->name;
 	}
 }

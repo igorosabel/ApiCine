@@ -27,9 +27,9 @@ class GetCinemaMoviesComponent extends OComponent {
 		}
 
 		if ($this->status === 'ok') {
-			$cinema = new Cinema();
-			if ($cinema->find(['id' => $id])) {
-				if ($cinema->get('id_user') === $filter['id']) {
+			$cinema = Cinema::findOne(['id' => $id]);
+			if (!is_null($cinema)) {
+				if ($cinema->id_user === $filter['id']) {
 					$this->list->list = $cinema->getMovies();
 				}
 				else {

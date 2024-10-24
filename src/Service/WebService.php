@@ -3,7 +3,7 @@
 namespace Osumi\OsumiFramework\App\Service;
 
 use Osumi\OsumiFramework\Core\OService;
-use Osumi\OsumiFramework\DB\ODB;
+use Osumi\OsumiFramework\ORM\ODB;
 use Osumi\OsumiFramework\Tools\OTools;
 use Osumi\OsumiFramework\App\Model\Cinema;
 use Osumi\OsumiFramework\App\Model\Movie;
@@ -25,19 +25,7 @@ class WebService extends OService {
 	 * @return array Lista de cines del usuario
 	 */
 	public function getCinemas(int $id_user): array {
-		$db = new ODB();
-		$sql = "SELECT * FROM `cinema` WHERE `id_user` = ?";
-		$db->query($sql, [$id_user]);
-		$ret = [];
-
-		while ($res = $db->next()) {
-			$cinema = new Cinema();
-			$cinema->update($res);
-
-			array_push($ret, $cinema);
-		}
-
-		return $ret;
+		return Cinema::where(['id_user' => $id_user]);
  	}
 
  	/**
@@ -54,15 +42,14 @@ class WebService extends OService {
 		$c  = $this->getConfig();
 		$lim = ($page-1) * $c->getExtra('num_por_pag');
 
-		$sql = "SELECT * FROM `movie` WHERE `id_user` = ? ORDER BY `movie_date` DESC LIMIT ".$lim.",".$c->getExtra('num_por_pag');
+		$sql = "SELECT * FROM `movie` WHERE `id_user` = ? ORDER BY `movie_date` DESC LIMIT " . $lim . "," . $c->getExtra('num_por_pag');
 		$db->query($sql, [$id_user]);
 		$ret = [];
 
 		while ($res = $db->next()) {
-			$movie = new Movie();
-			$movie->update($res);
+			$movie = new Movie($res);
 
-			array_push($ret, $movie);
+			$ret[] = $movie;
 		}
 
 		return $ret;
@@ -83,7 +70,7 @@ class WebService extends OService {
 		$db->query($sql, [$id_user]);
 		$res = $db->next();
 
-		return intval( ceil( (int)$res['num'] / $c->getExtra('num_por_pag')) );
+		return intval( ceil( (int) $res['num'] / $c->getExtra('num_por_pag')) );
 	}
 
 	/**
@@ -99,13 +86,12 @@ class WebService extends OService {
 		$db = new ODB();
 		$c  = $this->getConfig();
 
-		$sql = "SELECT * FROM `movie` WHERE `id_user` = ? AND `slug` LIKE '%".OTools::slugify($q)."%' ORDER BY `movie_date` DESC";
+		$sql = "SELECT * FROM `movie` WHERE `id_user` = ? AND `slug` LIKE '%" . OTools::slugify($q) . "%' ORDER BY `movie_date` DESC";
 		$db->query($sql, [$id_user]);
 		$ret = [];
 
 		while ($res = $db->next()) {
-			$movie = new Movie();
-			$movie->update($res);
+			$movie = new Movie($res);
 
 			array_push($ret, $movie);
 		}
@@ -126,11 +112,11 @@ class WebService extends OService {
 		$db = new ODB();
 		$c  = $this->getConfig();
 
-		$sql = "SELECT COUNT(*) AS `num` FROM `movie` WHERE `id_user` = ? AND `slug` LIKE '%".OTools::slugify($q)."%'";
+		$sql = "SELECT COUNT(*) AS `num` FROM `movie` WHERE `id_user` = ? AND `slug` LIKE '%" . OTools::slugify($q) . "%'";
 		$db->query($sql, [$id_user]);
 		$res = $db->next();
 
-		return intval( ceil( (int)$res['num'] / $c->getExtra('num_por_pag')) );
+		return intval( ceil( (int) $res['num'] / $c->getExtra('num_por_pag')) );
 	}
 
 	/**
@@ -247,8 +233,7 @@ class WebService extends OService {
 	 * @return string Fecha formateada
 	 */
 	public function getParsedDate(string $str): string {
-		$fec = strtotime($str);
-		return date('Y-m-d H:i:s', $fec);
+		return date('Y-m-d H:i:s', strtotime($str));
 	}
 
 	/**
@@ -278,8 +263,8 @@ class WebService extends OService {
 	 * @return void
 	 */
 	public function saveTicket(string $base64_string, int $id, string $ext): void {
-		$route_orig = $this->getConfig()->getDir('web').'ticket/'.$id.'.'.$ext;
-		$route_webp = $this->getConfig()->getDir('web').'ticket/'.$id.'.webp';
+		$route_orig = $this->getConfig()->getDir('web') . 'ticket/' . $id . '.' . $ext;
+		$route_webp = $this->getConfig()->getDir('web') . 'ticket/' . $id . '.webp';
 		$this->saveImage($route_orig, $base64_string);
 		$this->saveImageWebp($route_orig, $route_webp);
 	}
@@ -297,8 +282,8 @@ class WebService extends OService {
 	 */
 	public function saveCover(string $base64_string, int $id, string $ext): void {
 		$c = $this->getConfig();
-		$route_orig = $this->getConfig()->getDir('web').'cover/'.$id.'.'.$ext;
-		$route_webp = $this->getConfig()->getDir('web').'cover/'.$id.'.webp';
+		$route_orig = $this->getConfig()->getDir('web') . 'cover/' . $id . '.' . $ext;
+		$route_webp = $this->getConfig()->getDir('web') . 'cover/' . $id . '.webp';
 		$this->saveImage($route_orig, $base64_string);
 		$this->saveImageWebp($route_orig, $route_webp);
 	}
@@ -315,9 +300,9 @@ class WebService extends OService {
 	 * @return void
 	 */
 	public function saveCoverImage(string $image, int $id, string $ext): void {
-		$route_orig = $this->getConfig()->getDir('web').'cover/'.$id.'.'.$ext;
-		$route_webp = $this->getConfig()->getDir('web').'cover/'.$id.'.webp';
-		if (file_exists($route_orig)){
+		$route_orig = $this->getConfig()->getDir('web') . 'cover/' . $id . '.' . $ext;
+		$route_webp = $this->getConfig()->getDir('web') . 'cover/' . $id . '.webp';
+		if (file_exists($route_orig)) {
 			unlink($route_orig);
 		}
 
@@ -338,7 +323,7 @@ class WebService extends OService {
 	 * @return void
 	 */
 	public function saveImage(string $route, string $base64_string): void {
-		if (file_exists($route)){
+		if (file_exists($route)) {
 			unlink($route);
 		}
 

@@ -25,10 +25,10 @@ class EditCinemaComponent extends OComponent {
 		}
 
 		if ($this->status === 'ok') {
-			$cinema = new Cinema();
-			if ($cinema->find(['id'=>$id])) {
-				if ($cinema->get('id_user') === $filter['id']) {
-					$cinema->set('name', $name);
+			$cinema = Cinema::findOne(['id' => $id]);
+			if (!is_null($cinema)) {
+				if ($cinema->id_user === $filter['id']) {
+					$cinema->name = $name;
 					$cinema->save();
 				}
 				else {

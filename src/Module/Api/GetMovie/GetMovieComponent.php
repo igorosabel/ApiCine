@@ -33,15 +33,15 @@ class GetMovieComponent extends OComponent {
 		}
 
 		if ($this->status === 'ok') {
-			$movie = new Movie();
-			if ($movie->find(['id' => $this->id])) {
-				if ($movie->get('id_user') === $filter['id']) {
-					$this->id_cinema  = $movie->get('id_cinema');
-					$this->name       = $movie->get('name');
-					$this->slug       = $movie->get('slug');
+			$movie = Movie::findOne(['id' => $this->id]);
+			if (!is_null($movie)) {
+				if ($movie->id_user === $filter['id']) {
+					$this->id_cinema  = $movie->id_cinema;
+					$this->name       = $movie->name;
+					$this->slug       = $movie->slug;
 					$this->cover      = $movie->getCoverUrl();
 					$this->ticket     = $movie->getTicketUrl();
-					$this->imdb_url   = $movie->get('imdb_url');
+					$this->imdb_url   = $movie->imdb_url;
 					$this->movie_date = $movie->get('movie_date', 'd/m/Y');
 				}
 				else {

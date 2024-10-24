@@ -2,62 +2,55 @@
 
 namespace Osumi\OsumiFramework\App\Model;
 
-use Osumi\OsumiFramework\DB\OModel;
-use Osumi\OsumiFramework\DB\OModelGroup;
-use Osumi\OsumiFramework\DB\OModelField;
+use Osumi\OsumiFramework\ORM\OModel;
+use Osumi\OsumiFramework\ORM\OPK;
+use Osumi\OsumiFramework\ORM\OField;
+use Osumi\OsumiFramework\ORM\OCreatedAt;
+use Osumi\OsumiFramework\ORM\OUpdatedAt;
+use Osumi\OsumiFramework\ORM\ODB;
 
 class Cinema extends OModel {
-	/**
-	 * Configures current model object based on data-base table structure
-	 */
-	function __construct() {
-		$model = new OModelGroup(
-			new OModelField(
-				name: 'id',
-				type: OMODEL_PK,
-				comment: 'Id único para cada cine'
-			),
-			new OModelField(
-				name: 'id_user',
-				type: OMODEL_NUM,
-				comment: 'Id del usuario que añade el cine',
-				nullable: false,
-				ref: 'user.id'
-			),
-			new OModelField(
-				name: 'name',
-				type: OMODEL_TEXT,
-				size: 50,
-				comment: 'Nombre del cine',
-				nullable: false
-			),
-			new OModelField(
-				name: 'slug',
-				type: OMODEL_TEXT,
-				size: 50,
-				comment: 'Slug del nombre del cine',
-				nullable: false
-			),
-			new OModelField(
-				name: 'created_at',
-				type: OMODEL_CREATED,
-				comment: 'Fecha de creación del registro'
-			),
-			new OModelField(
-				name: 'updated_at',
-				type: OMODEL_UPDATED,
-				comment: 'Fecha de última modificación del registro'
-			)
-		);
+	#[OPK(
+		comment: 'Id único para cada cine'
+	)]
+	public ?int $id;
 
-		parent::load($model);
-	}
+	#[OField(
+		comment: 'Id del usuario que añade el cine',
+		nullable: false,
+		ref: 'user.id'
+	)]
+	public ?int $id_user;
+
+	#[OField(
+		comment: 'Nombre del cine',
+		max: 50,
+		nullable: false
+	)]
+	public ?string $name;
+
+	#[OField(
+		comment: 'Slug del nombre del cine',
+		max: 50,
+		nullable: false
+	)]
+	public ?string $slug;
+
+	#[OCreatedAt(
+		comment: 'Fecha de creación del registro'
+	)]
+	public ?string $created_at;
+
+	#[OUpdatedAt(
+		comment: 'Fecha de última modificación del registro'
+	)]
+	public ?string $updated_at;
 
 	/**
 	 * Devuelve el nombre del cine
 	 */
 	public function __toString() {
-		return $this->get('name');
+		return $this->name;
 	}
 
 	private ?array $movies = null;
@@ -91,15 +84,15 @@ class Cinema extends OModel {
 	 * @return void
 	 */
 	public function loadMovies(): void {
+		$db = new ODB();
 		$sql = "SELECT * FROM `movie` WHERE `id_cinema` = ? ORDER BY `movie_date` DESC";
-		$this->db->query($sql, [$this->get('id')]);
+		$db->query($sql, [$this->get('id')]);
 		$list = [];
 
-		while ($res=$this->db->next()) {
-			$movie = new Movie();
-			$movie->update($res);
+		while ($res = $db->next()) {
+			$movie = new Movie($res);
 
-			array_push($list, $movie);
+			$list[] = $movie;
 		}
 
 		$this->setMovies($list);

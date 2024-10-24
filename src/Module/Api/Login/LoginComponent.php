@@ -25,10 +25,10 @@ class LoginComponent extends OComponent {
 		}
 
 		if ($this->status === 'ok') {
-			$u = new User();
-			if ($u->find(['name' => $data->getName()])) {
-				if (password_verify($data->getPass(), $u->get('pass'))) {
-					$this->id = $u->get('id');
+			$u = User::findOne(['name' => $data->getName()]);
+			if (!is_null($u)) {
+				if (password_verify($data->getPass(), $u->pass)) {
+					$this->id = $u->id;
 					$this->name = $data->getName();
 
 					$tk = new OToken($this->getConfig()->getExtra('secret'));
