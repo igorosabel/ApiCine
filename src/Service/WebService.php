@@ -11,13 +11,6 @@ use Osumi\OsumiFramework\Plugins\OImage;
 
 class WebService extends OService {
 	/**
-	 * Load service tools
-	 */
-	function __construct() {
-		$this->loadService();
-	}
-
-	/**
 	 * Obtiene la lista de cines de un usuario
 	 *
 	 * @param int $id_user Id del usuario
@@ -38,21 +31,13 @@ class WebService extends OService {
 	 * @return array Lista de películas del usuario
 	 */
  	public function getMovies(int $id_user, int $page): array {
-		$db = new ODB();
-		$c  = $this->getConfig();
-		$lim = ($page-1) * $c->getExtra('num_por_pag');
-
-		$sql = "SELECT * FROM `movie` WHERE `id_user` = ? ORDER BY `movie_date` DESC LIMIT " . $lim . "," . $c->getExtra('num_por_pag');
-		$db->query($sql, [$id_user]);
-		$ret = [];
-
-		while ($res = $db->next()) {
-			$movie = new Movie($res);
-
-			$ret[] = $movie;
-		}
-
-		return $ret;
+		$lim = ($page - 1) * $this->getConfig()->getExtra('num_por_pag');
+		return Movie::where(
+			['id_user' => $id_user],
+			[
+				'order_by' => 'movie_date#desc',
+				'limit' => $lim . "," . $this->getConfig()->getExtra('num_por_pag')
+			]);
 	}
 
 	/**
@@ -63,14 +48,8 @@ class WebService extends OService {
 	 * @return int Número de páginas de resultados
 	 */
 	public function getMoviesPages(int $id_user): int {
-		$db = new ODB();
-		$c  = $this->getConfig();
-
-		$sql = "SELECT COUNT(*) AS `num` FROM `movie` WHERE `id_user` = ?";
-		$db->query($sql, [$id_user]);
-		$res = $db->next();
-
-		return intval( ceil( (int) $res['num'] / $c->getExtra('num_por_pag')) );
+		$num = Movie::count(['id_user' => $id_user]);
+		return intval( ceil( $num / $this->getConfig()->getExtra('num_por_pag')) );
 	}
 
 	/**
@@ -84,16 +63,13 @@ class WebService extends OService {
 	 */
  	public function getMoviesByTitle(int $id_user, string $q): array {
 		$db = new ODB();
-		$c  = $this->getConfig();
-
 		$sql = "SELECT * FROM `movie` WHERE `id_user` = ? AND `slug` LIKE '%" . OTools::slugify($q) . "%' ORDER BY `movie_date` DESC";
 		$db->query($sql, [$id_user]);
 		$ret = [];
 
 		while ($res = $db->next()) {
 			$movie = new Movie($res);
-
-			array_push($ret, $movie);
+			$ret[] = $movie;
 		}
 
 		return $ret;
@@ -110,13 +86,11 @@ class WebService extends OService {
 	 */
 	public function getMoviesPagesByTitle(int $id_user, string $q): int {
 		$db = new ODB();
-		$c  = $this->getConfig();
-
 		$sql = "SELECT COUNT(*) AS `num` FROM `movie` WHERE `id_user` = ? AND `slug` LIKE '%" . OTools::slugify($q) . "%'";
 		$db->query($sql, [$id_user]);
 		$res = $db->next();
 
-		return intval( ceil( (int) $res['num'] / $c->getExtra('num_por_pag')) );
+		return intval( ceil( (int) $res['num'] / $this->getConfig()->getExtra('num_por_pag')) );
 	}
 
 	/**
@@ -143,10 +117,9 @@ class WebService extends OService {
 	 * @return ?array Lista de resultados obtenidos o null en caso de que haya algún error
 	 */
 	public function tmdbList($q): ?array {
-		$c = $this->getConfig();
-		$query = sprintf($c->getExtra('tmdb_search_url'),
+		$query = sprintf($this->getConfig()->getExtra('tmdb_search_url'),
 			urlencode($q),
-			$c->getExtra('tmdb_api_key')
+			$this->getConfig()->getExtra('tmdb_api_key')
 		);
 		$curl = curl_init();
 
@@ -175,8 +148,8 @@ class WebService extends OService {
 
 		foreach ($data['results'] as $result) {
 			array_push($list, [
-				'id' => $result['id'],
-				'title' => $result['title'],
+				'id'     => $result['id'],
+				'title'  => $result['title'],
 				'poster' => sprintf($c->getExtra('tmdb_poster_url'), $result['poster_path'])
 			]);
 		}
@@ -191,10 +164,9 @@ class WebService extends OService {
 	 * @return ?array Detalle de la película o null si ocurre algún error
 	 */
 	public function tmdbDetail(int $id): ?array {
-		$c = $this->getConfig();
-		$query = sprintf($c->getExtra('tmdb_movie_url'),
+		$query = sprintf($this->getConfig()->getExtra('tmdb_movie_url'),
 			$id,
-			$c->getExtra('tmdb_api_key')
+			$this->getConfig()->getExtra('tmdb_api_key')
 		);
 		$curl = curl_init();
 
@@ -219,9 +191,10 @@ class WebService extends OService {
 		}
 
 		$data = json_decode($response, true);
-		return ['title'    => $data['title'],
-				'poster'   => sprintf($c->getExtra('tmdb_poster_url'), $data['poster_path']),
-				'imdb_url' => sprintf($c->getExtra('imdb_url'), $data['imdb_id'])
+		return [
+			'title'    => $data['title'],
+			'poster'   => sprintf($c->getExtra('tmdb_poster_url'), $data['poster_path']),
+			'imdb_url' => sprintf($c->getExtra('imdb_url'), $data['imdb_id'])
 		];
 	}
 
@@ -281,7 +254,6 @@ class WebService extends OService {
 	 * @return void
 	 */
 	public function saveCover(string $base64_string, int $id, string $ext): void {
-		$c = $this->getConfig();
 		$route_orig = $this->getConfig()->getDir('web') . 'cover/' . $id . '.' . $ext;
 		$route_webp = $this->getConfig()->getDir('web') . 'cover/' . $id . '.webp';
 		$this->saveImage($route_orig, $base64_string);
