@@ -25,46 +25,36 @@ class SaveMovieComponent extends OComponent {
 	 * @return void
 	 */
 	public function run(MovieDTO $data): void {
-		if ($data->isValid()) {
-			$id_cinema    = $data->getIdCinema();
-			$name         = $data->getName();
-			$cover        = $data->getCover();
-			$cover_status = $data->getCoverStatus();
-			$ticket       = $data->getTicket();
-			$imdb_url     = $data->getImdbUrl();
-			$date         = $data->getDate();
-			$filter       = $data->getFilter();
-		}
-		else {
+		if (!$data->isValid()) {
 			$this->status = 'error';
 		}
 
 		if ($this->status === 'ok') {
 			$movie = new Movie();
-			$movie->id_user    = $filter['id'];
-			$movie->id_cinema  = $id_cinema;
-			$movie->name       = $name;
-			$movie->slug       = OTools::slugify($name);
-			$movie->imdb_url   = $imdb_url;
-			$movie->movie_date = $this->ws->getParsedDate($date);
+			$movie->id_user    = $data->filter['id'];
+			$movie->id_cinema  = $data->id_cinema;
+			$movie->name       = $data->name;
+			$movie->slug       = OTools::slugify($data->name);
+			$movie->imdb_url   = $data->imdb_url;
+			$movie->movie_date = $this->ws->getParsedDate($data->date);
 			$movie->save();
 
 			$cover_ext = null;
-			if ($cover_status === 2) {
-				$cover_ext = array_pop(explode('.', $cover));
+			if ($data->cover_status === 2) {
+				$cover_ext = array_pop(explode('.', $data->cover));
 			}
 			else {
-				$cover_ext = $this->ws->getImageExt($cover);
+				$cover_ext = $this->ws->getImageExt($data->cover);
 			}
-			$ticket_ext = $this->ws->getImageExt($ticket);
+			$ticket_ext = $this->ws->getImageExt($data->ticket);
 
-			$this->ws->saveTicket($ticket, $movie->id, $ticket_ext);
-			if ($cover_status === 2) {
-				$tmdb_cover = file_get_contents($cover);
+			$this->ws->saveTicket($data->ticket, $movie->id, $ticket_ext);
+			if ($data->cover_status === 2) {
+				$tmdb_cover = file_get_contents($data->cover);
 				$this->ws->saveCoverImage($tmdb_cover, $movie->id, $cover_ext);
 			}
 			else {
-				$this->ws->saveCover($cover, $movie->id, $cover_ext);
+				$this->ws->saveCover($data->cover, $movie->id, $cover_ext);
 			}
 		}
 	}

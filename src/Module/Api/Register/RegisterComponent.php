@@ -25,21 +25,21 @@ class RegisterComponent extends OComponent {
 		}
 
 		if ($this->status === 'ok') {
-			$u = User::findOne(['name' => $data->getName()]);
+			$u = User::findOne(['name' => $data->name]);
 			if (!is_null($u)) {
 				$this->status = 'error-user';
 			}
 			else {
-				$u->name = $data->getName();
-				$u->pass = password_hash($data->getPass(), PASSWORD_BCRYPT);
+				$u->name = $data->name;
+				$u->pass = password_hash($data->pass, PASSWORD_BCRYPT);
 				$u->save();
 
-				$this->id = $u->id;
-				$this->name = $data->getName();
+				$this->id   = $u->id;
+				$this->name = $data->name;
 
 				$tk = new OToken($this->getConfig()->getExtra('secret'));
 				$tk->addParam('id',   $this->id);
-				$tk->addParam('name', $data->getName());
+				$tk->addParam('name', $this->name);
 				$tk->addParam('exp', time() + (24 * 60 * 60));
 				$this->token = $tk->getToken();
 			}

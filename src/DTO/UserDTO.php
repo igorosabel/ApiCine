@@ -6,34 +6,21 @@ use Osumi\OsumiFramework\Core\ODTO;
 use Osumi\OsumiFramework\Web\ORequest;
 
 class UserDTO implements ODTO{
-	private string $name = '';
-	private string $pass = '';
-
-	public function getName(): string {
-		return $this->name;
-	}
-	private function setName(string $name): void {
-		$this->name = $name;
-	}
-	public function getPass(): string {
-		return $this->pass;
-	}
-	private function setPass(string $pass): void {
-		$this->pass = $pass;
-	}
+	public string $name = '';
+	public string $pass = '';
 
 	public function isValid(): bool {
-		return ($this->getName() != '' && $this->getPass() != '');
+		return ($this->name !== '' && $this->pass !== '');
 	}
 
 	public function load(ORequest $req): void {
 		$name = $req->getParamString('name');
 		if (!is_null($name)) {
-			$this->setName($name);
+			$this->name = $name;
 		}
 		$pass = $req->getParamString('pass');
 		if (!is_null($pass)) {
-			$this->setPass($pass);
+			$this->pass = $pass;
 		}
 	}
 }
