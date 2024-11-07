@@ -5,11 +5,11 @@ namespace Osumi\OsumiFramework\App\Module\Api\GetCinemaMovies;
 use Osumi\OsumiFramework\Core\OComponent;
 use Osumi\OsumiFramework\Web\ORequest;
 use Osumi\OsumiFramework\App\Model\Cinema;
-use Osumi\OsumiFramework\App\Component\Api\Movies\MoviesComponent;
+use Osumi\OsumiFramework\App\Component\Model\MovieList\MovieListComponent;
 
 class GetCinemaMoviesComponent extends OComponent {
 	public string $status = 'ok';
-	public ?MoviesComponent $list = null;
+	public ?MovieListComponent $list = null;
 
 	/**
 	 * Función para obtener la lista de las últimas películas de un cine concreto
@@ -20,7 +20,7 @@ class GetCinemaMoviesComponent extends OComponent {
 	public function run(ORequest $req): void {
 		$id     = $req->getParamInt('id');
 		$filter = $req->getFilter('Login');
-		$this->list = new MoviesComponent();
+		$this->list = new MovieListComponent();
 
 		if (is_null($id) || is_null($filter) || !array_key_exists('id', $filter)) {
 			$this->status = 'error';

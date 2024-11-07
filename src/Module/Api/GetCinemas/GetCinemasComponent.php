@@ -5,18 +5,18 @@ namespace Osumi\OsumiFramework\App\Module\Api\GetCinemas;
 use Osumi\OsumiFramework\Core\OComponent;
 use Osumi\OsumiFramework\Web\ORequest;
 use Osumi\OsumiFramework\App\Service\WebService;
-use Osumi\OsumiFramework\App\Component\Api\Cinemas\CinemasComponent;
+use Osumi\OsumiFramework\App\Component\Model\CinemaList\CinemaListComponent;
 
 class GetCinemasComponent extends OComponent {
 	private ?WebService $ws = null;
 
 	public string $status = 'ok';
-	public ?CinemasComponent $list = null;
+	public ?CinemaListComponent $list = null;
 
 	public function __construct() {
 		parent::__construct();
-		$this->ws = inject(WebService::class);
-		$this->list = new CinemasComponent();
+		$this->ws   = inject(WebService::class);
+		$this->list = new CinemaListComponent();
 	}
 
 	/**
