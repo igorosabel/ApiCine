@@ -193,8 +193,8 @@ class WebService extends OService {
 		$data = json_decode($response, true);
 		return [
 			'title'    => $data['title'],
-			'poster'   => sprintf($c->getExtra('tmdb_poster_url'), $data['poster_path']),
-			'imdb_url' => sprintf($c->getExtra('imdb_url'), $data['imdb_id'])
+			'poster'   => sprintf($this->getConfig()->getExtra('tmdb_poster_url'), $data['poster_path']),
+			'imdb_url' => sprintf($this->getConfig()->getExtra('imdb_url'), $data['imdb_id'])
 		];
 	}
 

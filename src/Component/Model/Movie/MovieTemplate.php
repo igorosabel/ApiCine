@@ -9,6 +9,6 @@ null
 	"cover": "<?php echo urlencode($movie->getCoverUrl()) ?>",
 	"ticket": "<?php echo urlencode($movie->getTicketUrl()) ?>",
 	"imdbUrl": {{ movie.imdb_url | string }},
-	"date": {{ movie.movie_date | date }}
+	"date": {{ movie.movie_date | date("d/m/Y") }}
 }
 <?php endif ?>
