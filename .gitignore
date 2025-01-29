@@ -1,3 +1,5 @@
 /vendor/
 /ofw/
 /composer.lock
+/public/.php-ini
+/public/.php-version
