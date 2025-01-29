@@ -147,11 +147,11 @@ class WebService extends OService {
 		$data = json_decode($response, true);
 
 		foreach ($data['results'] as $result) {
-			array_push($list, [
+			$list[] = [
 				'id'     => $result['id'],
 				'title'  => $result['title'],
-				'poster' => sprintf($c->getExtra('tmdb_poster_url'), $result['poster_path'])
-			]);
+				'poster' => sprintf($this->getConfig()->getExtra('tmdb_poster_url'), $result['poster_path'])
+			];
 		}
 		return $list;
 	}
