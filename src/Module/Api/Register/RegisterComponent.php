@@ -40,7 +40,7 @@ class RegisterComponent extends OComponent {
 				$tk = new OToken($this->getConfig()->getExtra('secret'));
 				$tk->addParam('id',   $this->id);
 				$tk->addParam('name', $this->name);
-				$tk->addParam('exp', time() + (24 * 60 * 60));
+				$tk->setEXP(time() + (24 * 60 * 60));
 				$this->token = $tk->getToken();
 			}
 		}

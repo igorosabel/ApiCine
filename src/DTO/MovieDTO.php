@@ -2,44 +2,31 @@
 
 namespace Osumi\OsumiFramework\App\DTO;
 
-use Osumi\OsumiFramework\Core\ODTO;
-use Osumi\OsumiFramework\Web\ORequest;
+use Osumi\OsumiFramework\DTO\ODTO;
+use Osumi\OsumiFramework\DTO\ODTOField;
 
-class MovieDTO implements ODTO{
-	public ?int    $id_cinema    = null;
-	public ?string $name         = null;
-	public ?string $cover        = null;
-	public ?int    $cover_status = null;
-	public ?string $ticket       = null;
-	public ?string $imdb_url     = null;
-	public ?string $date         = null;
-	public ?array  $filter       = null;
+class MovieDTO extends ODTO{
+	#[ODTOField(required: true)]
+	public ?int $idCinema = null;
 
-	public function isValid(): bool {
-		if (
-			is_null($this->id_cinema) ||
-			is_null($this->name) ||
-			is_null($this->cover) ||
-			is_null($this->cover_status) ||
-			is_null($this->ticket) ||
-			is_null($this->imdb_url) ||
-			is_null($this->date) ||
-			is_null($this->filter) ||
-			!array_key_exists('id', $this->filter)
-		) {
-			return false;
-		}
-		return true;
-	}
+	#[ODTOField(required: true)]
+	public ?string $name = null;
 
-	public function load(ORequest $req): void {
-		$this->id_cinema = $req->getParamInt('idCinema');
-		$this->name = urldecode($req->getParamString('name'));
-		$this->cover = urldecode($req->getParamString('cover'));
-		$this->cover_status = $req->getParamInt('coverStatus');
-		$this->ticket = urldecode($req->getParam('ticket'));
-		$this->imdb_url = urldecode($req->getParamString('imdbUrl'));
-		$this->date = urldecode($req->getParamString('date'));
-		$this->filter = $req->getFilter('Login');
-	}
+	#[ODTOField(required: true)]
+	public ?string $cover = null;
+
+	#[ODTOField(required: true)]
+	public ?int $coverStatus = null;
+
+	#[ODTOField(required: true)]
+	public ?string $ticket = null;
+
+	#[ODTOField(required: true)]
+	public ?string $imdbUrl = null;
+
+	#[ODTOField(required: true)]
+	public ?string $date = null;
+
+	#[ODTOField(required: true, filter: 'Login', filterProperty: 'id')]
+	public ?array $idUser = null;
 }

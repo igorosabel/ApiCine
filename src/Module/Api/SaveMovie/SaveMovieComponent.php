@@ -31,16 +31,16 @@ class SaveMovieComponent extends OComponent {
 
 		if ($this->status === 'ok') {
 			$movie = new Movie();
-			$movie->id_user    = $data->filter['id'];
-			$movie->id_cinema  = $data->id_cinema;
+			$movie->id_user    = $data->idUser;
+			$movie->id_cinema  = $data->idCinema;
 			$movie->name       = $data->name;
 			$movie->slug       = OTools::slugify($data->name);
-			$movie->imdb_url   = $data->imdb_url;
+			$movie->imdb_url   = $data->imdbUrl;
 			$movie->movie_date = $this->ws->getParsedDate($data->date);
 			$movie->save();
 
 			$cover_ext = null;
-			if ($data->cover_status === 2) {
+			if ($data->coverStatus === 2) {
 				$cover_ext = array_pop(explode('.', $data->cover));
 			}
 			else {
@@ -49,7 +49,7 @@ class SaveMovieComponent extends OComponent {
 			$ticket_ext = $this->ws->getImageExt($data->ticket);
 
 			$this->ws->saveTicket($data->ticket, $movie->id, $ticket_ext);
-			if ($data->cover_status === 2) {
+			if ($data->coverStatus === 2) {
 				$tmdb_cover = file_get_contents($data->cover);
 				$this->ws->saveCoverImage($tmdb_cover, $movie->id, $cover_ext);
 			}
