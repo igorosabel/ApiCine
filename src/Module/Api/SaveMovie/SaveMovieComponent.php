@@ -5,17 +5,18 @@ namespace Osumi\OsumiFramework\App\Module\Api\SaveMovie;
 use Osumi\OsumiFramework\Core\OComponent;
 use Osumi\OsumiFramework\Tools\OTools;
 use Osumi\OsumiFramework\App\DTO\MovieDTO;
-use Osumi\OsumiFramework\App\Service\WebService;
+use Osumi\OsumiFramework\App\Service\MovieService;
 use Osumi\OsumiFramework\App\Model\Movie;
+use Osumi\OsumiFramework\App\Model\MovieCompanion;
 
 class SaveMovieComponent extends OComponent {
-	private ?WebService $ws = null;
+	private ?MovieService $ms = null;
 
 	public string $status = 'ok';
 
 	public function __construct() {
 		parent::__construct();
-		$this->ws = inject(WebService::class);
+		$this->ms = inject(MovieService::class);
 	}
 
 	/**
@@ -30,13 +31,13 @@ class SaveMovieComponent extends OComponent {
 		}
 
 		if ($this->status === 'ok') {
-			$movie = new Movie();
+			$movie = Movie::create();
 			$movie->id_user    = $data->idUser;
 			$movie->id_cinema  = $data->idCinema;
-			$movie->name       = $data->name;
+			$movie->name       = urldecode($data->name);
 			$movie->slug       = OTools::slugify($data->name);
-			$movie->imdb_url   = $data->imdbUrl;
-			$movie->movie_date = $this->ws->getParsedDate($data->date);
+			$movie->imdb_url   = urldecode($data->imdbUrl);
+			$movie->movie_date = $this->ms->getParsedDate($data->date);
 			$movie->save();
 
 			$cover_ext = null;
@@ -44,17 +45,24 @@ class SaveMovieComponent extends OComponent {
 				$cover_ext = array_pop(explode('.', $data->cover));
 			}
 			else {
-				$cover_ext = $this->ws->getImageExt($data->cover);
+				$cover_ext = $this->ms->getImageExt($data->cover);
 			}
-			$ticket_ext = $this->ws->getImageExt($data->ticket);
+			$ticket_ext = $this->ms->getImageExt($data->ticket);
 
-			$this->ws->saveTicket($data->ticket, $movie->id, $ticket_ext);
+			$this->ms->saveTicket(urldecode($data->ticket), $movie->id, $ticket_ext);
 			if ($data->coverStatus === 2) {
-				$tmdb_cover = file_get_contents($data->cover);
-				$this->ws->saveCoverImage($tmdb_cover, $movie->id, $cover_ext);
+				$tmdb_cover = file_get_contents(urldecode($data->cover));
+				$this->ms->saveCoverImage($tmdb_cover, $movie->id, $cover_ext);
 			}
 			else {
-				$this->ws->saveCover($data->cover, $movie->id, $cover_ext);
+				$this->ms->saveCover(urldecode($data->cover), $movie->id, $cover_ext);
+			}
+
+			foreach ($data->companions as $companion) {
+				$mc = MovieCompanion::create();
+				$mc->id_movie = $movie->id;
+				$mc->id_companion = $companion['id'];
+				$mc->save();
 			}
 		}
 	}

@@ -5,23 +5,11 @@ namespace Osumi\OsumiFramework\App\Service;
 use Osumi\OsumiFramework\Core\OService;
 use Osumi\OsumiFramework\ORM\ODB;
 use Osumi\OsumiFramework\Tools\OTools;
-use Osumi\OsumiFramework\App\Model\Cinema;
-use Osumi\OsumiFramework\App\Model\Movie;
 use Osumi\OsumiFramework\Plugins\OImage;
+use Osumi\OsumiFramework\App\Model\Movie;
 
-class WebService extends OService {
-	/**
-	 * Obtiene la lista de cines de un usuario
-	 *
-	 * @param int $id_user Id del usuario
-	 *
-	 * @return array Lista de cines del usuario
-	 */
-	public function getCinemas(int $id_user): array {
-		return Cinema::where(['id_user' => $id_user]);
- 	}
-
- 	/**
+class MovieService extends OService {
+  /**
 	 * Obtiene la lista de películas de un usuario
 	 *
 	 * @param int $id_user Id del usuario
@@ -93,112 +81,7 @@ class WebService extends OService {
 		return intval( ceil( (int) $res['num'] / $this->getConfig()->getExtra('num_por_pag')) );
 	}
 
-	/**
-	 * Borrar un cine con todas sus películas
-	 *
-	 * @param Cinema $cinema Objeto cine que hay que borrar
-	 *
-	 * @return void
-	 */
-	public function deleteCinema(Cinema $cinema): void {
-		$movies = $cinema->getMovies();
-		foreach ($movies as $movie) {
-			$movie->deleteFull();
-		}
-
-		$cinema->delete();
-	}
-
-	/**
-	 * Obtiene la lista de películas de The Movie Database
-	 *
-	 * @param string $q Cadena de texto a buscar
-	 *
-	 * @return ?array Lista de resultados obtenidos o null en caso de que haya algún error
-	 */
-	public function tmdbList($q): ?array {
-		$query = sprintf($this->getConfig()->getExtra('tmdb_search_url'),
-			urlencode($q),
-			$this->getConfig()->getExtra('tmdb_api_key')
-		);
-		$curl = curl_init();
-
-		curl_setopt_array($curl, [
-			CURLOPT_URL => $query,
-			CURLOPT_RETURNTRANSFER => true,
-			CURLOPT_ENCODING => "",
-			CURLOPT_MAXREDIRS => 10,
-			CURLOPT_TIMEOUT => 30,
-			CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-			CURLOPT_CUSTOMREQUEST => "GET"
-		]);
-
-		$response = curl_exec($curl);
-		$err = curl_error($curl);
-
-		curl_close($curl);
-
-		if ($err) {
-			$this->getLog()->error('cURL Error #:'.$err);
-			return null;
-		}
-
-		$list = [];
-		$data = json_decode($response, true);
-
-		foreach ($data['results'] as $result) {
-			$list[] = [
-				'id'     => $result['id'],
-				'title'  => $result['title'],
-				'poster' => sprintf($this->getConfig()->getExtra('tmdb_poster_url'), $result['poster_path'])
-			];
-		}
-		return $list;
-	}
-
-	/**
-	 * Obtiene el detalle de una película
-	 *
-	 * @param int $id Id de una película
-	 *
-	 * @return ?array Detalle de la película o null si ocurre algún error
-	 */
-	public function tmdbDetail(int $id): ?array {
-		$query = sprintf($this->getConfig()->getExtra('tmdb_movie_url'),
-			$id,
-			$this->getConfig()->getExtra('tmdb_api_key')
-		);
-		$curl = curl_init();
-
-		curl_setopt_array($curl, [
-			CURLOPT_URL => $query,
-			CURLOPT_RETURNTRANSFER => true,
-			CURLOPT_ENCODING => "",
-			CURLOPT_MAXREDIRS => 10,
-			CURLOPT_TIMEOUT => 30,
-			CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-			CURLOPT_CUSTOMREQUEST => "GET"
-		]);
-
-		$response = curl_exec($curl);
-		$err = curl_error($curl);
-
-		curl_close($curl);
-
-		if ($err) {
-			$this->getLog()->error('cURL Error #:'.$err);
-			return null;
-		}
-
-		$data = json_decode($response, true);
-		return [
-			'title'    => $data['title'],
-			'poster'   => sprintf($this->getConfig()->getExtra('tmdb_poster_url'), $data['poster_path']),
-			'imdb_url' => sprintf($this->getConfig()->getExtra('imdb_url'), $data['imdb_id'])
-		];
-	}
-
-	/**
+  /**
 	 * Devuelve una fecha con un formato concreto (Y-m-d H:i:s)
 	 *
 	 * @param string $str Fecha a formatear
@@ -209,7 +92,7 @@ class WebService extends OService {
 		return date('Y-m-d H:i:s', strtotime($str));
 	}
 
-	/**
+  /**
 	 * Obtiene la extensión de un archivo de imagen a partir de una cadena de Base64
 	 *
 	 * @param string $img Contenido de la imagen en Base64
@@ -217,14 +100,14 @@ class WebService extends OService {
 	 * @return string Extensión del archivo de imagen
 	 */
 	public function getImageExt(string $img): string {
-		$arr_data = explode(';', $img);
+		$arr_data = explode(';', urldecode($img));
 		$arr_data = explode(':', $arr_data[0]);
 		$arr_data = explode('/', $arr_data[1]);
 
 		return $arr_data[1];
 	}
 
-	/**
+  /**
 	 * Guarda la imagen del ticket de una película
 	 *
 	 * @param string $base64_string Contenido de la imagen del ticket en Base64
@@ -294,7 +177,7 @@ class WebService extends OService {
 	 *
 	 * @return void
 	 */
-	public function saveImage(string $route, string $base64_string): void {
+	private function saveImage(string $route, string $base64_string): void {
 		if (file_exists($route)) {
 			unlink($route);
 		}
@@ -314,7 +197,7 @@ class WebService extends OService {
 	 *
 	 * @return void
 	 */
-	public function saveImageWebp(string $route_orig, string $route_webp): void {
+	private function saveImageWebp(string $route_orig, string $route_webp): void {
 		$im = new OImage();
 		$im->load($route_orig);
 

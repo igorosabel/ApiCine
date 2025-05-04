@@ -3,26 +3,26 @@
 namespace Osumi\OsumiFramework\App\Task;
 
 use Osumi\OsumiFramework\Core\OTask;
-use Osumi\OsumiFramework\App\Service\WebService;
+use Osumi\OsumiFramework\App\Service\TMDBService;
 
 class FindTask extends OTask {
 	public function __toString() {
 		return "find: Función para buscar películas en The Movie Database";
 	}
 
-	private ?webService $web_service = null;
+	private ?TMDBService $ts = null;
 
 	function __construct() {
-		$this->web_service = new WebService();
+		$this->ts = new TMDBService();
 	}
 
 	public function run(array $options=[]): void {
-		if (count($options)==0) {
+		if (count($options) === 0) {
 			echo "\n  Error: tienes que indicar una cadena de texto a buscar.\n\n";
 			exit;
 		}
 
-		$result = $this->web_service->tmdbList($options[0]);
+		$result = $this->ts->tmdbList($options[0]);
 		var_dump($result);
 	}
 }

@@ -9,32 +9,33 @@ use Osumi\OsumiFramework\ORM\OCreatedAt;
 use Osumi\OsumiFramework\ORM\OUpdatedAt;
 use Osumi\OsumiFramework\ORM\ODB;
 
-class Cinema extends OModel {
+class Companion extends OModel {
 	#[OPK(
-		comment: 'Id único para cada cine'
+		comment: 'Id único de cada acompañant'
 	)]
 	public ?int $id;
 
 	#[OField(
-		comment: 'Id del usuario que añade el cine',
+		comment: 'Id del usuario que crea los acompañantes',
 		nullable: false,
+		ref: 'user.id'
+	)]
+	public ?int $for_user;
+
+	#[OField(
+		comment: 'Id del usuario',
+		nullable: true,
+		default: null,
 		ref: 'user.id'
 	)]
 	public ?int $id_user;
 
 	#[OField(
-		comment: 'Nombre del cine',
-		max: 50,
+		comment: 'Nombre del acompañante',
+		max: 100,
 		nullable: false
 	)]
 	public ?string $name;
-
-	#[OField(
-		comment: 'Slug del nombre del cine',
-		max: 50,
-		nullable: false
-	)]
-	public ?string $slug;
 
 	#[OCreatedAt(
 		comment: 'Fecha de creación del registro'
@@ -47,10 +48,44 @@ class Cinema extends OModel {
 	public ?string $updated_at;
 
 	/**
-	 * Devuelve el nombre del cine
+	 * Usuario registrado
 	 */
-	public function __toString() {
-		return $this->name;
+	private ?User $user = null;
+	private bool $user_loaded = false;
+
+	/**
+	 * Método para obtener el usuario registrado de un acompañante
+	 *
+	 * @return ?User Devuelve el usuario o null si tiene un usuario registrado
+	 */
+	public function getUser(): ?User {
+		if (is_null($this->user) && !$this->user_loaded) {
+			$this->loadUser();
+		}
+		return $this->user;
+	}
+
+	/**
+	 * Método para asignar un usuario registrado al acompañante
+	 *
+	 * @param User $u Usuario registrado
+	 *
+	 * @return void
+	 */
+	private function setUser(User $u): void {
+		$this->user = $u;
+	}
+
+	/**
+	 * Método para cargar un usuario registrado al acompañante
+	 *
+	 * @return void
+	 */
+	private function loadUser(): void {
+		if (!is_null($this->id_user)) {
+			$this->setUser( User::findOne(['id' => $this->id_user]) );
+		}
+		$this->user_loaded = true;
 	}
 
 	/**
@@ -88,7 +123,7 @@ class Cinema extends OModel {
 	 */
 	public function loadMovies(): void {
 		$db = new ODB();
-		$sql = "SELECT * FROM `movie` WHERE `id_cinema` = ? ORDER BY `movie_date` DESC";
+		$sql = "SELECT * FROM `movie` WHERE `id` IN (SELECT `id_movie` FROM `movie_companion` WHERE `id_companion` = ?) ORDER BY `movie_date` DESC";
 		$db->query($sql, [$this->get('id')]);
 		$list = [];
 

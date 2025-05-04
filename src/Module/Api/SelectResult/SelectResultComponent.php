@@ -4,10 +4,10 @@ namespace Osumi\OsumiFramework\App\Module\Api\SelectResult;
 
 use Osumi\OsumiFramework\Core\OComponent;
 use Osumi\OsumiFramework\Web\ORequest;
-use Osumi\OsumiFramework\App\Service\WebService;
+use Osumi\OsumiFramework\App\Service\TMDBService;
 
 class SelectResultComponent extends OComponent {
-	private ?WebService $ws = null;
+	private ?TMDBService $ts = null;
 
 	public string $status   = 'ok';
 	public string $title    = '';
@@ -16,7 +16,7 @@ class SelectResultComponent extends OComponent {
 
 	public function __construct() {
 		parent::__construct();
-		$this->ws = inject(WebService::class);
+		$this->ts = inject(TMDBService::class);
 	}
 
 	/**
@@ -34,7 +34,7 @@ class SelectResultComponent extends OComponent {
 		}
 
 		if ($this->status === 'ok') {
-			$detail = $this->ws->tmdbDetail($id);
+			$detail = $this->ts->tmdbDetail($id);
 
 			$this->title    = $detail['title'];
 			$this->poster   = $detail['poster'];

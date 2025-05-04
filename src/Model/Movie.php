@@ -7,6 +7,7 @@ use Osumi\OsumiFramework\ORM\OPK;
 use Osumi\OsumiFramework\ORM\OField;
 use Osumi\OsumiFramework\ORM\OCreatedAt;
 use Osumi\OsumiFramework\ORM\OUpdatedAt;
+use Osumi\OsumiFramework\ORM\ODB;
 
 class Movie extends OModel {
 	#[OPK(
@@ -91,6 +92,51 @@ class Movie extends OModel {
 	public function getTicketUrl(): string {
 		global $core;
 		return $core->config->getUrl('base').'ticket/'.$this->id.'.webp';
+	}
+
+	/**
+	 * Lista de acompañantes
+	 */
+	private ?array $companions = null;
+
+	/**
+	 * Método para obtener la lista de acompañantes
+	 *
+	 * @return array Lista de acompañantes
+	 */
+	public function getCompanions(): array {
+		if (is_null($this->companions)) {
+			$this->loadCompanions();
+		}
+		return $this->companions;
+	}
+
+	/**
+	 * Método para guardar la lista de acompañantes
+	 *
+	 * @param array $c Lista de acompañantes
+	 *
+	 * @return void
+	 */
+	private function setCompanions(array $c): void {
+		$this->companions = $c;
+	}
+
+	/**
+	 * Método para cargar la lista de acompañantes
+	 *
+	 * @return void
+	 */
+	private function loadCompanions(): void {
+		$db = new ODB();
+		$sql = "SELECT * FROM `companion` WHERE `id` IN (SELECT `id_companion` FROM `movie_companion` WHERE `id_movie` = ?) ORDER BY `name`";
+		$db->query($sql, [$this->id]);
+		$list = [];
+
+		while ($res = $db->next()) {
+			$list[] = Companion::from($res);
+		}
+		$this->setCompanions($list);
 	}
 
 	/**

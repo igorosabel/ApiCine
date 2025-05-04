@@ -4,18 +4,18 @@ namespace Osumi\OsumiFramework\App\Module\Api\SearchMovie;
 
 use Osumi\OsumiFramework\Core\OComponent;
 use Osumi\OsumiFramework\Web\ORequest;
-use Osumi\OsumiFramework\App\Service\WebService;
+use Osumi\OsumiFramework\App\Service\TMDBService;
 use Osumi\OsumiFramework\App\Component\Api\TmdbList\TmdbListComponent;
 
 class SearchMovieComponent extends OComponent {
-	private ?WebService $ws = null;
+	private ?TMDBService $ts = null;
 
 	public string $status = 'ok';
 	public ?TmdbListComponent $list = null;
 
 	public function __construct() {
 		parent::__construct();
-		$this->ws = inject(WebService::class);
+		$this->ts = inject(TMDBService::class);
 		$this->list = new TmdbListComponent();
 	}
 
@@ -44,7 +44,7 @@ class SearchMovieComponent extends OComponent {
 				// IMDB URL
 				https://www.imdb.com/title/XXXXX/
 			*/
-			$this->list->list = $this->ws->tmdbList($q);
+			$this->list->list = $this->ts->tmdbList($q);
 		}
 	}
 }

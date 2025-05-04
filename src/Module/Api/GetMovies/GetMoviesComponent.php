@@ -4,11 +4,11 @@ namespace Osumi\OsumiFramework\App\Module\Api\GetMovies;
 
 use Osumi\OsumiFramework\Core\OComponent;
 use Osumi\OsumiFramework\Web\ORequest;
-use Osumi\OsumiFramework\App\Service\WebService;
+use Osumi\OsumiFramework\App\Service\MovieService;
 use Osumi\OsumiFramework\App\Component\Model\MovieList\MovieListComponent;
 
 class GetMoviesComponent extends OComponent {
-	private ?WebService $ws = null;
+	private ?MovieService $ms = null;
 
 	public string $status    = 'ok';
 	public float  $num_pages = 0;
@@ -16,7 +16,7 @@ class GetMoviesComponent extends OComponent {
 
 	public function __construct() {
 		parent::__construct();
-		$this->ws = inject(WebService::class);
+		$this->ms = inject(MovieService::class);
 		$this->list = new MovieListComponent();
 	}
 
@@ -35,8 +35,8 @@ class GetMoviesComponent extends OComponent {
 		}
 
 		if ($this->status === 'ok') {
-			$this->num_pages = $this->ws->getMoviesPages($filter['id']);
-			$this->list->list = $this->ws->getMovies($filter['id'], $page);
+			$this->num_pages  = $this->ms->getMoviesPages($filter['id']);
+			$this->list->list = $this->ms->getMovies($filter['id'], $page);
 		}
 	}
 }

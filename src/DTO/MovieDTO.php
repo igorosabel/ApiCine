@@ -27,6 +27,9 @@ class MovieDTO extends ODTO{
 	#[ODTOField(required: true)]
 	public ?string $date = null;
 
+	#[ODTOField(required: true)]
+	public ?array $companions = null;
+
 	#[ODTOField(required: true, filter: 'Login', filterProperty: 'id')]
-	public ?array $idUser = null;
+	public ?int $idUser = null;
 }
